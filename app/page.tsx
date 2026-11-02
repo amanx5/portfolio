@@ -1,3 +1,4 @@
+import { Chat } from "@/components/chat";
 import { profileResult } from "@/lib/profile";
 
 export default function Home() {
@@ -10,11 +11,5 @@ export default function Home() {
     console.warn("Loaded profile with warnings:\n", profileResult.warnings);
   }
 
-  const { identity } = profileResult.profile;
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <h1>{identity.name}</h1>
-      <p>{identity.headline}</p>
-    </div>
-  );
+  return <Chat />;
 }
