@@ -9,7 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@promptfolio/ai": "^0.0.2",
     "@promptfolio/core": "^0.0.2",
+    "ai": "^7.0.159",
     "next": "16.4.3",
     "react": "19.3.0",
     "react-dom": "19.3.0"
