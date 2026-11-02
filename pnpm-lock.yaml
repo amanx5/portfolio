@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@promptfolio/core':
+        specifier: ^0.0.2
+        version: 0.0.2
       next:
         specifier: 16.4.3
         version: 16.4.3(@babel/core@7.29.7)(@types/node@20.19.43)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -434,6 +437,10 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+
+  '@promptfolio/core@0.0.2':
+    resolution: {integrity: sha512-MawPmf0SYl+GWo4I1/4vYFW6Jg+W2U22YgfiA/XLvbKrv0jcTxv4Qxy9/JrRegUqbrRaUJLXToafaG6cILp1AQ==}
+    engines: {node: '>=22'}
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
@@ -2328,6 +2335,10 @@ snapshots:
       fastq: 1.20.3
 
   '@nolyfill/is-core-module@1.0.39': {}
+
+  '@promptfolio/core@0.0.2':
+    dependencies:
+      zod: 4.6.7
 
   '@rtsao/scc@1.1.0': {}
 
