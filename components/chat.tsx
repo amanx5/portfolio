@@ -36,6 +36,13 @@ export function Chat() {
           placeholder="Ask assistant"
         />
       </form>
+
+      <p className="text-xs text-zinc-500">
+        Messages are sent to an AI model through Vercel AI Gateway to generate
+        replies, and are not stored by this site. To prevent abuse, a keyed hash
+        of your IP address is kept for up to 24 hours to count daily messages.
+        Please don't share personal information here.
+      </p>
     </div>
   );
 }
