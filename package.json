@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ai-sdk/react": "^4.0.163",
     "@promptfolio/ai": "^0.0.2",
     "@promptfolio/core": "^0.0.2",
     "ai": "^7.0.159",
