@@ -1,7 +1,9 @@
 "use client";
 
-import { useChat } from "@ai-sdk/react";
-import { useState } from "react";
+import { useAppContext } from "@/contexts/app-context";
+import { useChat, type UIMessage } from "@ai-sdk/react";
+import { useState, type JSX } from "react";
+import Markdown from "react-markdown";
 
 export function Chat() {
   const { messages, sendMessage, status, error } = useChat();
@@ -11,13 +13,8 @@ export function Chat() {
   return (
     <div className="mx-auto p-16 flex w-full max-w-xl flex-col gap-4">
       {/* messages */}
-      {messages.map((message) => (
-        <div key={message.id}>
-          <strong>{message.role === "user" ? "You" : "Assistant"}:</strong>{" "}
-          {message.parts.map((part, i) =>
-            part.type === "text" ? <span key={i}>{part.text}</span> : null,
-          )}
-        </div>
+      {messages.map((m) => (
+        <Message key={m.id} message={m} />
       ))}
 
       {/* error */}
@@ -40,5 +37,46 @@ export function Chat() {
         />
       </form>
     </div>
+  );
+}
+
+function Message({ message }: { message: UIMessage }) {
+  const roleLabel = message.role === "user" ? "You" : "Assistant";
+  return (
+    <div key={message.id}>
+      <strong>{roleLabel}:</strong>
+      {message.parts.map((part, i) =>
+        part.type === "text" ? (
+          <Markdown key={i} components={{ a: Anchor }}>
+            {part.text}
+          </Markdown>
+        ) : null,
+      )}
+    </div>
+  );
+}
+
+function Anchor({ href, children }: JSX.IntrinsicElements["a"]) {
+  const ctx = useAppContext();
+
+  // profileLinkUrls returns URLs in normalized form, so https://github.com and https://github.com/ (with trailing /)
+  // should count as the same link. Comparing the raw href would treat them as different.
+  if (
+    !href ||
+    !URL.canParse(href) ||
+    !ctx.profile.allUrls.has(new URL(href).href)
+  ) {
+    return children;
+  }
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer nofollow"
+      className="underline"
+    >
+      {children}
+    </a>
   );
 }

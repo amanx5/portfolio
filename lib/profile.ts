@@ -1,5 +1,6 @@
-"server-only";
-
+// keeps the profile and its validation code out of the client bundle
+// this ensures build error if profileResult is imported in any client component by mistake 
+import "server-only";
 import { loadStructuredProfile } from "@promptfolio/core";
 import profileData from "@/profile.json";
 

@@ -1,4 +1,6 @@
+import { profileLinkUrls } from "@promptfolio/core";
 import { Chat } from "@/components/chat";
+import { AppContextProvider } from "@/contexts/app-context";
 import { profileResult } from "@/lib/profile";
 
 export default function Home() {
@@ -11,5 +13,11 @@ export default function Home() {
     console.warn("Loaded profile with warnings:\n", profileResult.warnings);
   }
 
-  return <Chat />;
+  const allUrls = new Set(profileLinkUrls(profileResult.profile));
+
+  return (
+    <AppContextProvider value={{ profile: { allUrls } }}>
+      <Chat />
+    </AppContextProvider>
+  );
 }
