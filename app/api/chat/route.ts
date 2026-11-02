@@ -1,5 +1,7 @@
 import { handleChatRequest } from "@promptfolio/ai";
 import { gateway } from "ai";
+import { chatLimiter } from "@/lib/chat-limit";
+import { identifyVisitor } from "@/lib/visitor";
 import { profileResult } from "@/lib/profile";
 
 // TODO: validate model id
@@ -19,6 +21,6 @@ export async function POST(request: Request): Promise<Response> {
   return handleChatRequest(request, {
     model: gateway(modelId),
     profile: profileResult.profile,
-    limit: null,
+    limit: { limiter: chatLimiter, identifyVisitor },
   });
 }
