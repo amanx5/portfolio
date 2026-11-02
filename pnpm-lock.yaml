@@ -17,6 +17,9 @@ importers:
       '@promptfolio/core':
         specifier: ^0.0.2
         version: 0.0.2
+      '@upstash/redis':
+        specifier: ^1.40.0
+        version: 1.40.0
       ai:
         specifier: ^7.0.159
         version: 7.0.159(zod@4.6.7)
@@ -809,6 +812,9 @@ packages:
     resolution: {integrity: sha512-DpLMlAqlrk4zBVK3DiDjwKD0oq7pZNy+8BiIBRuByqb6dm5jsdoLMhIiyh/xR7+WejaW/1Ui+XgbgMNa4+zWJg==}
     cpu: [x64]
     os: [win32]
+
+  '@upstash/redis@1.40.0':
+    resolution: {integrity: sha512-F6+V7Kof2McJtGWclusZLt7hBRmIMZg+albS32/5TuNRg/92FM2nkyKPY9wWEieMj9hjyUi4iURsN1djsHNbwA==}
 
   '@vercel/oidc@3.2.0':
     resolution: {integrity: sha512-UycprH3T6n3jH0k44NHMa7pnFHGu/N05MjojYr+Mc6I7obkoLIJujSWwin1pCvdy/eOxrI/l3uDLQsmcrOb4ug==}
@@ -2234,6 +2240,9 @@ packages:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}
     engines: {node: '>= 0.4'}
 
+  uncrypto@0.1.3:
+    resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
+
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
@@ -2996,6 +3005,10 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.13.0':
     optional: true
+
+  '@upstash/redis@1.40.0':
+    dependencies:
+      uncrypto: 0.1.3
 
   '@vercel/oidc@3.2.0': {}
 
@@ -4827,6 +4840,8 @@ snapshots:
       has-bigints: 1.1.0
       has-symbols: 1.1.0
       which-boxed-primitive: 1.1.1
+
+  uncrypto@0.1.3: {}
 
   undici-types@6.21.0: {}
 
