@@ -1,9 +1,12 @@
 "use client";
 
+import { Bubble, BubbleContent } from "@/components/ui/bubble";
+import { Message, MessageContent } from "@/components/ui/message";
 import { useAppContext } from "@/contexts/app-context";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import { useState, type JSX } from "react";
 import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export function Chat() {
   const { messages, sendMessage, status, error } = useChat();
@@ -14,7 +17,7 @@ export function Chat() {
     <div className="mx-auto p-16 flex w-full max-w-xl flex-col gap-4">
       {/* messages */}
       {messages.map((m) => (
-        <Message key={m.id} message={m} />
+        <ChatMessage key={m.id} message={m} />
       ))}
 
       {/* error */}
@@ -47,19 +50,34 @@ export function Chat() {
   );
 }
 
-function Message({ message }: { message: UIMessage }) {
-  const roleLabel = message.role === "user" ? "You" : "Assistant";
+function ChatMessage({ message }: { message: UIMessage }) {
+  const isUser = message.role === "user";
+  const text = message.parts
+    .map((part) => (part.type === "text" ? part.text : ""))
+    .join("");
+
   return (
-    <div key={message.id}>
-      <strong>{roleLabel}:</strong>
-      {message.parts.map((part, i) =>
-        part.type === "text" ? (
-          <Markdown key={i} components={{ a: Anchor }}>
-            {part.text}
-          </Markdown>
-        ) : null,
-      )}
-    </div>
+    <Message align={isUser ? "end" : "start"}>
+      <MessageContent>
+        {isUser ? <Question>{text}</Question> : <Answer>{text}</Answer>}
+      </MessageContent>
+    </Message>
+  );
+}
+
+function Question({ children }: { children: string }) {
+  return (
+    <Bubble align="end" variant="muted">
+      <BubbleContent>{children}</BubbleContent>
+    </Bubble>
+  );
+}
+
+function Answer({ children }: { children: string }) {
+  return (
+    <Markdown remarkPlugins={[remarkGfm]} components={{ a: Anchor }}>
+      {children}
+    </Markdown>
   );
 }
 
