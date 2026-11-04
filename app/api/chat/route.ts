@@ -7,6 +7,10 @@ import { profileResult } from "@/lib/profile";
 // TODO: validate model id
 const modelId = process.env.MODEL_ID ?? "nvidia/nemotron-3.5-lightning-free";
 
+// lets local dev skip chat turn limits; never honoured in production
+const chatLimitDisabled =
+  process.env.NODE_ENV !== "production" && process.env.DISABLE_CHAT_LIMIT === "1";
+
 // max duration this serverless route handler is allowed to run
 export const maxDuration = 60;
 
@@ -21,6 +25,6 @@ export async function POST(request: Request): Promise<Response> {
   return handleChatRequest(request, {
     model: gateway(modelId),
     profile: profileResult.profile,
-    limit: { limiter: chatLimiter, identifyVisitor },
+    limit: chatLimitDisabled ? null : { limiter: chatLimiter, identifyVisitor },
   });
 }
