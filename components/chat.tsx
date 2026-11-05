@@ -2,11 +2,22 @@
 
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Message, MessageContent } from "@/components/ui/message";
+import {
+  MessageScroller,
+  MessageScrollerButton,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerProvider,
+  MessageScrollerViewport,
+} from "@/components/ui/message-scroller";
 import { useAppContext } from "@/contexts/app-context";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import { useState, type JSX } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+
+const disclaimer =
+  "Replies come from an AI model and aren't stored here. A hash of your IP is kept for 24 hours to limit daily messages. Don't share personal information.";
 
 export function Chat() {
   const { messages, sendMessage, status, error } = useChat();
@@ -14,38 +25,48 @@ export function Chat() {
   const busy = status === "submitted" || status === "streaming";
 
   return (
-    <div className="mx-auto p-16 flex w-full max-w-xl flex-col gap-4">
-      {/* messages */}
-      {messages.map((m) => (
-        <ChatMessage key={m.id} message={m} />
-      ))}
+    <div className="flex h-dvh w-full flex-col gap-4 py-8">
+      <MessageScrollerProvider>
+        <MessageScroller className="flex-1">
+          <MessageScrollerViewport>
+            <MessageScrollerContent
+              aria-busy={busy}
+              className="mx-auto w-full max-w-xl gap-6 px-4"
+            >
+              {messages.map((m) => (
+                <MessageScrollerItem
+                  key={m.id}
+                  messageId={m.id}
+                  scrollAnchor={m.role === "user"}
+                >
+                  <ChatMessage message={m} />
+                </MessageScrollerItem>
+              ))}
+            </MessageScrollerContent>
+          </MessageScrollerViewport>
+          <MessageScrollerButton />
+        </MessageScroller>
+      </MessageScrollerProvider>
 
-      {/* error */}
-      {error && <p className="text-red-600">{error.message}</p>}
-
-      {/* prompt form */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!input.trim() || busy) return;
-          sendMessage({ text: input });
-          setInput("");
-        }}
-      >
-        <input
-          className="w-full border p-2"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask assistant"
-        />
-      </form>
-
-      <p className="text-xs text-zinc-500">
-        Messages are sent to an AI model through Vercel AI Gateway to generate
-        replies, and are not stored by this site. To prevent abuse, a keyed hash
-        of your IP address is kept for up to 24 hours to count daily messages.
-        Please don't share personal information here.
-      </p>
+      <div className="mx-auto w-full max-w-xl px-4">
+        {error && <p className="text-destructive">{error.message}</p>}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!input.trim() || busy) return;
+            sendMessage({ text: input });
+            setInput("");
+          }}
+        >
+          <input
+            className="w-full border p-2"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask assistant"
+          />
+        </form>
+        <p className="mt-2 text-xs text-muted-foreground">{disclaimer}</p>
+      </div>
     </div>
   );
 }
