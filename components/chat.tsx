@@ -142,9 +142,11 @@ function Question({ children }: { children: string }) {
 
 function Answer({ children }: { children: string }) {
   return (
-    <Markdown remarkPlugins={[remarkGfm]} components={{ a: Anchor }}>
-      {children}
-    </Markdown>
+    <div className="prose prose-sm prose-neutral dark:prose-invert max-w-none">
+      <Markdown remarkPlugins={[remarkGfm]} components={{ a: Anchor }}>
+        {children}
+      </Markdown>
+    </div>
   );
 }
 
