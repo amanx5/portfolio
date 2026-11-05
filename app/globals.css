@@ -129,5 +129,8 @@
   html {
     @apply font-sans;
     color-scheme: light dark;
+    /* faint thumb, transparent track on every scrollbar */
+    scrollbar-color: color-mix(in oklab, var(--muted-foreground) 40%, transparent)
+      transparent;
   }
 }
