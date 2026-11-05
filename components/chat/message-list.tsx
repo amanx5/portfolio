@@ -1,0 +1,67 @@
+import { Answer } from "@/components/chat/answer";
+import { Bubble, BubbleContent } from "@/components/ui/bubble";
+import { Message, MessageContent } from "@/components/ui/message";
+import {
+  MessageScroller,
+  MessageScrollerButton,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerProvider,
+  MessageScrollerViewport,
+} from "@/components/ui/message-scroller";
+import { type UIMessage } from "@ai-sdk/react";
+
+export function MessageList({
+  messages,
+  busy,
+}: {
+  messages: UIMessage[];
+  busy: boolean;
+}) {
+  return (
+    <MessageScrollerProvider>
+      <MessageScroller className="flex-1">
+        <MessageScrollerViewport>
+          <MessageScrollerContent
+            aria-busy={busy}
+            className="mx-auto w-full max-w-xl gap-6 px-4"
+          >
+            {messages.map((m) => (
+              <MessageScrollerItem
+                key={m.id}
+                messageId={m.id}
+                scrollAnchor={m.role === "user"}
+              >
+                <ChatMessage message={m} />
+              </MessageScrollerItem>
+            ))}
+          </MessageScrollerContent>
+        </MessageScrollerViewport>
+        <MessageScrollerButton />
+      </MessageScroller>
+    </MessageScrollerProvider>
+  );
+}
+
+function ChatMessage({ message }: { message: UIMessage }) {
+  const isUser = message.role === "user";
+  const text = message.parts
+    .map((part) => (part.type === "text" ? part.text : ""))
+    .join("");
+
+  return (
+    <Message align={isUser ? "end" : "start"}>
+      <MessageContent>
+        {isUser ? <Question>{text}</Question> : <Answer>{text}</Answer>}
+      </MessageContent>
+    </Message>
+  );
+}
+
+function Question({ children }: { children: string }) {
+  return (
+    <Bubble align="end" variant="muted">
+      <BubbleContent>{children}</BubbleContent>
+    </Bubble>
+  );
+}

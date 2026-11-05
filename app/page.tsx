@@ -1,5 +1,5 @@
 import { profileLinkUrls } from "@promptfolio/core";
-import { Chat } from "@/components/chat";
+import { Chat } from "@/components/chat/chat";
 import { AppContextProvider } from "@/contexts/app-context";
 import { profileResult } from "@/lib/profile";
 
@@ -14,9 +14,10 @@ export default function Home() {
   }
 
   const allUrls = new Set(profileLinkUrls(profileResult.profile));
+  const { name } = profileResult.profile.identity;
 
   return (
-    <AppContextProvider value={{ profile: { allUrls } }}>
+    <AppContextProvider value={{ profile: { name, allUrls } }}>
       <Chat />
     </AppContextProvider>
   );
