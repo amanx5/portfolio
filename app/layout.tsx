@@ -14,7 +14,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// SITE_URL wins; on Vercel, VERCEL_PROJECT_PRODUCTION_URL (the production domain, without https://)
+// is set automatically, so production needs no setup.
+function siteUrl() {
+  if (process.env.SITE_URL) return process.env.SITE_URL;
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL)
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  return "http://localhost:3000";
+}
+
 export const metadata: Metadata = {
+  // makes relative metadata URLs (og:url, og:image) absolute for link previews
+  metadataBase: new URL(siteUrl()),
   title: "Portfolio",
   description: "Portfolio website",
 };

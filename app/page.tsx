@@ -19,7 +19,7 @@ function profileMetadata(): Metadata {
   return {
     title,
     description,
-    openGraph: { title, description, type: "profile" },
+    openGraph: { title, description, type: "profile", url: "/" },
   };
 }
 
