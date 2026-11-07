@@ -1,6 +1,11 @@
 import { Answer } from "@/components/chat/answer";
+import { MessageActions } from "@/components/chat/message-actions/message-actions";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
-import { Message, MessageContent } from "@/components/ui/message";
+import {
+  Message,
+  MessageContent,
+  MessageFooter,
+} from "@/components/ui/message";
 import {
   MessageScroller,
   MessageScrollerButton,
@@ -26,13 +31,16 @@ export function MessageList({
             aria-busy={busy}
             className="mx-auto w-full max-w-xl gap-6 px-4"
           >
-            {messages.map((m) => (
+            {messages.map((m, i) => (
               <MessageScrollerItem
                 key={m.id}
                 messageId={m.id}
                 scrollAnchor={m.role === "user"}
               >
-                <ChatMessage message={m} />
+                <ChatMessage
+                  message={m}
+                  showActions={!(busy && i === messages.length - 1)}
+                />
               </MessageScrollerItem>
             ))}
           </MessageScrollerContent>
@@ -43,7 +51,13 @@ export function MessageList({
   );
 }
 
-function ChatMessage({ message }: { message: UIMessage }) {
+function ChatMessage({
+  message,
+  showActions,
+}: {
+  message: UIMessage;
+  showActions: boolean;
+}) {
   const isUser = message.role === "user";
   const text = message.parts
     .map((part) => (part.type === "text" ? part.text : ""))
@@ -53,6 +67,11 @@ function ChatMessage({ message }: { message: UIMessage }) {
     <Message align={isUser ? "end" : "start"}>
       <MessageContent>
         {isUser ? <Question>{text}</Question> : <Answer>{text}</Answer>}
+        {!isUser && showActions && text && (
+          <MessageFooter>
+            <MessageActions text={text} />
+          </MessageFooter>
+        )}
       </MessageContent>
     </Message>
   );
