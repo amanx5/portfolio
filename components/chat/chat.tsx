@@ -38,7 +38,7 @@ export function Chat() {
       <Header
         name={profile.name}
         headline={profile.headline}
-        website={profile.website}
+        links={profile.links}
         avatarUrl={profile.avatarUrl}
         showNewChat={!empty}
         onNewChat={newChat}

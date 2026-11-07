@@ -36,13 +36,11 @@ export default function Home() {
 
   const allUrls = new Set(profileLinkUrls(profileResult.profile));
   const { name, headline } = profileResult.profile.identity;
-  const website = profileResult.profile.links.find(
-    (l) => l.label === "Website",
-  )?.url;
+  const { links } = profileResult.profile;
 
   return (
     <AppContextProvider
-      value={{ profile: { name, headline, website, avatarUrl, allUrls } }}
+      value={{ profile: { name, headline, links, avatarUrl, allUrls } }}
     >
       <Chat />
     </AppContextProvider>

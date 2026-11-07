@@ -2,11 +2,13 @@
 
 import { createContext, useContext, type ReactNode } from "react";
 
+export type ProfileLink = { label: string; url: string };
+
 export type AppContextValue = {
   profile: {
     name: string;
     headline: string;
-    website?: string;
+    links: ProfileLink[];
     avatarUrl?: string;
     allUrls: Set<string>;
   };
