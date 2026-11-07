@@ -66,7 +66,15 @@ function ChatMessage({
   return (
     <Message align={isUser ? "end" : "start"}>
       <MessageContent>
-        {isUser ? <Question>{text}</Question> : <Answer>{text}</Answer>}
+        <Bubble
+          align={isUser ? "end" : "start"}
+          variant={isUser ? "muted" : "ghost"}
+        >
+          <BubbleContent>
+            {isUser ? text : <Answer>{text}</Answer>}
+          </BubbleContent>
+        </Bubble>
+
         {!isUser && showActions && text && (
           <MessageFooter>
             <MessageActions text={text} />
@@ -74,13 +82,5 @@ function ChatMessage({
         )}
       </MessageContent>
     </Message>
-  );
-}
-
-function Question({ children }: { children: string }) {
-  return (
-    <Bubble align="end" variant="muted">
-      <BubbleContent>{children}</BubbleContent>
-    </Bubble>
   );
 }
