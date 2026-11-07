@@ -24,7 +24,7 @@ export function MessageList({
   busy: boolean;
 }) {
   return (
-    <MessageScrollerProvider>
+    <MessageScrollerProvider scrollPreviousItemPeek={0}>
       <MessageScroller className="flex-1">
         <MessageScrollerViewport>
           <MessageScrollerContent
