@@ -63,3 +63,10 @@ The following logs looks like the same exact call is executed multiple times.
 ```
 
 But in reality, model called the `listProfileRecords` for 5 different sections (experience, projects, repositories, contributions, education). Show additional details in tool calls logs for making them differenciable.
+
+## Source-web plugin
+Idea, name not final.
+
+A source package, like `@promptfolio/source-github`, that builds profile data from the owner's own websites and blogs (for example amankumar.cc), so consumers don't have to keep a hand-written `profile.json` in sync with what they already publish.
+
+Still being thought through in the "Source-web plugin for Promptfolio" session: what it reads (structured data, pages, feeds), how it maps onto the profile schema and its warnings, and when it fetches (build time vs. request time).
