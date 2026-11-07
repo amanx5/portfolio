@@ -36,6 +36,7 @@ export function MessageList({
                 key={m.id}
                 messageId={m.id}
                 scrollAnchor={m.role === "user"}
+                className="[content-visibility:visible]"
               >
                 <ChatMessage
                   message={m}
