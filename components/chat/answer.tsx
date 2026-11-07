@@ -1,19 +1,40 @@
 import { useAppContext } from "@/contexts/app-context";
 import { type JSX } from "react";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import {
+  defaultRehypePlugins,
+  type ExtraProps,
+  Streamdown,
+  type StreamdownProps,
+} from "streamdown";
 
+// Streamdown's rehype-harden marks links it can't parse (e.g. a bare record id like "jsoc-grid") with
+// " [blocked]". Render them as plain text instead, the same way Anchor treats links outside the profile.
+const [harden, hardenOptions] = defaultRehypePlugins.harden as [
+  NonNullable<StreamdownProps["rehypePlugins"]>[number],
+  object,
+];
+const rehypePlugins = Object.entries(defaultRehypePlugins).map(
+  ([name, plugin]) =>
+    name === "harden"
+      ? [harden, { ...hardenOptions, linkBlockPolicy: "text-only" }]
+      : plugin,
+) as StreamdownProps["rehypePlugins"];
+
+// Streamdown keeps half-streamed Markdown (an unclosed ** or list) from flashing as raw text.
+// Its link-safety modal is off because Anchor already allows only the profile's own URLs.
 export function Answer({ children }: { children: string }) {
   return (
-    <div className="prose prose-sm prose-neutral dark:prose-invert max-w-none">
-      <Markdown remarkPlugins={[remarkGfm]} components={{ a: Anchor }}>
-        {children}
-      </Markdown>
-    </div>
+    <Streamdown
+      components={{ a: Anchor }}
+      linkSafety={{ enabled: false }}
+      rehypePlugins={rehypePlugins}
+    >
+      {children}
+    </Streamdown>
   );
 }
 
-function Anchor({ href, children }: JSX.IntrinsicElements["a"]) {
+function Anchor({ href, children }: JSX.IntrinsicElements["a"] & ExtraProps) {
   const ctx = useAppContext();
 
   // profileLinkUrls returns URLs in normalized form, so https://github.com and https://github.com/ (with trailing /)
