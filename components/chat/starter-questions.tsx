@@ -23,12 +23,14 @@ export function StarterQuestions({
   onSelect: (text: string) => void;
 }) {
   return (
-    <ul className="flex flex-col gap-1">
+    // AI Elements Suggestion chips, wrapped rather than scrolled so all four questions stay visible
+    <ul className="flex flex-wrap justify-center gap-2">
       {starterQuestions(firstName).map((q) => (
-        <li key={q.text}>
+        <li key={q.text} className="max-w-full">
           <Button
-            variant="ghost"
-            className="w-full justify-start text-muted-foreground"
+            variant="outline"
+            size="sm"
+            className="text-muted-foreground"
             onClick={() => onSelect(q.text)}
           >
             <q.icon />
