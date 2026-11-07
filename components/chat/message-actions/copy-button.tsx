@@ -12,7 +12,11 @@ export function CopyButton({ text }: { text: string }) {
   const label = copied ? "Copied" : "Copy answer";
 
   const copy = async () => {
-    await navigator.clipboard.writeText(text);
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      return; // the browser can deny clipboard access; then there's nothing copied to confirm
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
