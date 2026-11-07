@@ -68,7 +68,16 @@ export function Chat() {
       </main>
 
       <p className="mx-auto w-full max-w-xl px-4 text-xs text-muted-foreground">
-        {disclaimer}
+        {disclaimer} Powered by{" "}
+        <a
+          href="https://github.com/promptfolios/promptfolio"
+          target="_blank"
+          rel="noreferrer"
+          className="underline underline-offset-2 hover:text-foreground"
+        >
+          Promptfolio
+        </a>
+        .
       </p>
     </div>
   );
