@@ -20,6 +20,7 @@ export function Chat() {
     stop,
     setMessages,
     clearError,
+    regenerate,
   } = useChat();
 
   const busy = status === "submitted" || status === "streaming";
@@ -54,11 +55,12 @@ export function Chat() {
             messages={messages}
             busy={busy}
             thinking={status === "submitted"}
+            error={error}
+            onRetry={() => regenerate()}
           />
         )}
 
         <div className="mx-auto flex w-full max-w-xl flex-col gap-4 px-4">
-          {error && <p className="text-destructive">{error.message}</p>}
           <PromptInput busy={busy} onSend={send} onStop={stop} />
           {empty && <StarterQuestions firstName={firstName} onSelect={send} />}
         </div>
