@@ -134,4 +134,9 @@
     scrollbar-color: color-mix(in oklab, var(--muted-foreground) 40%, transparent)
       transparent;
   }
+  /* Tailwind v4 resets buttons to cursor: default */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
 }
