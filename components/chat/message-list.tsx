@@ -19,9 +19,11 @@ import { type UIMessage } from "@ai-sdk/react";
 export function MessageList({
   messages,
   busy,
+  thinking,
 }: {
   messages: UIMessage[];
   busy: boolean;
+  thinking: boolean;
 }) {
   return (
     <MessageScrollerProvider scrollPreviousItemPeek={0}>
@@ -36,12 +38,20 @@ export function MessageList({
                 key={m.id}
                 messageId={m.id}
                 scrollAnchor={m.role === "user"}
-                className="[content-visibility:visible]"
+                className="relative [content-visibility:visible]"
               >
                 <ChatMessage
                   message={m}
                   showActions={!(busy && i === messages.length - 1)}
                 />
+                {thinking && i === messages.length - 1 && (
+                  <div
+                    role="status"
+                    className="absolute top-full left-0 mt-6 shimmer text-sm text-muted-foreground"
+                  >
+                    Thinking…
+                  </div>
+                )}
               </MessageScrollerItem>
             ))}
           </MessageScrollerContent>

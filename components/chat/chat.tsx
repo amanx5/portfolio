@@ -50,7 +50,11 @@ export function Chat() {
             What would you like to know about {firstName}?
           </h2>
         ) : (
-          <MessageList messages={messages} busy={busy} />
+          <MessageList
+            messages={messages}
+            busy={busy}
+            thinking={status === "submitted"}
+          />
         )}
 
         <div className="mx-auto flex w-full max-w-xl flex-col gap-4 px-4">
