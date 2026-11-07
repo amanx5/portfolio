@@ -16,11 +16,13 @@ function profileMetadata(): Metadata {
   const { name } = profileResult.profile.identity;
   const firstName = name.split(" ")[0];
   const title = `${name} · Ask about my work`;
-  const description = `Ask an AI about ${firstName}'s experience, projects and skills.`;
+  // 120-160 characters fills a search snippet
+  const description = `Ask an AI about ${firstName}'s experience, projects and skills. Every answer comes from ${firstName}'s own profile, so nothing is invented.`;
   return {
     title,
     description,
-    openGraph: { title, description, type: "profile", url: "/" },
+    // siteName: Discord and some other apps show it above the title
+    openGraph: { title, description, siteName: name, type: "profile", url: "/" },
   };
 }
 
