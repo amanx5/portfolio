@@ -13,6 +13,8 @@ The aim is to develop a minimal personal chat based portfolio powered by [Prompt
 Source code of promptfolio monorepo is present locally on this system [here](../promptfolio/). It also has a reference app [here](../promptfolio/apps/portfolio/).
 
 Guide me step by step how to implement personal portfolio in this repo.
-Do not do any code changes, I will implement it manually.
+Apply each change in the same turn you share it, then explain what changed and why. Don't commit unless I ask.
 
 Tell me one step at a time. The step should be as minimal as possible.
+
+Prefer [AI Elements](https://ui.shadcn.com/docs/ai-elements) and shadcn components (and their utils, such as Shimmer) over custom components. Before writing a new chat UI piece, check whether AI Elements already has one, and use or adapt it. Write a custom component only when nothing there fits, and say why.
