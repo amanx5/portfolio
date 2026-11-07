@@ -5,6 +5,8 @@ import { createContext, useContext, type ReactNode } from "react";
 export type AppContextValue = {
   profile: {
     name: string;
+    headline: string;
+    website?: string;
     allUrls: Set<string>;
   };
 };

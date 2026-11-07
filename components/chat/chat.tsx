@@ -1,5 +1,6 @@
 "use client";
 
+import { Header } from "@/components/chat/header/header";
 import { MessageList } from "@/components/chat/message-list";
 import { PromptInput } from "@/components/chat/prompt-input";
 import { StarterQuestions } from "@/components/chat/starter-questions";
@@ -11,14 +12,35 @@ const disclaimer =
 
 export function Chat() {
   const { profile } = useAppContext();
-  const { messages, sendMessage, status, error, stop } = useChat();
+  const {
+    messages,
+    sendMessage,
+    status,
+    error,
+    stop,
+    setMessages,
+    clearError,
+  } = useChat();
+
   const busy = status === "submitted" || status === "streaming";
   const empty = messages.length === 0;
   const firstName = profile.name.split(" ")[0];
   const send = (text: string) => sendMessage({ text });
+  const newChat = async () => {
+    await stop(); // a reply still streaming would add its message back
+    setMessages([]);
+    clearError();
+  };
 
   return (
-    <div className="flex h-dvh w-full flex-col gap-4 py-8">
+    <div className="flex h-dvh w-full flex-col gap-4 pb-8">
+      <Header
+        name={profile.name}
+        headline={profile.headline}
+        website={profile.website}
+        showNewChat={!empty}
+        onNewChat={newChat}
+      />
       {/* same tree in both states, so the textarea keeps focus after the first send */}
       <main
         className={`flex min-h-0 flex-1 flex-col ${empty ? "justify-center gap-6" : "gap-4"}`}
