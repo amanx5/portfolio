@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Chat } from "@/components/chat/chat";
 import { AppContextProvider } from "@/contexts/app-context";
 import { profileResult } from "@/lib/profile";
+import { avatarUrl } from "@/lib/site";
 
 // The profile is bundled JSON, so a static metadata object can read it; no generateMetadata needed.
 // If the profile fails to load, the layout's defaults are used.
@@ -41,7 +42,7 @@ export default function Home() {
 
   return (
     <AppContextProvider
-      value={{ profile: { name, headline, website, allUrls } }}
+      value={{ profile: { name, headline, website, avatarUrl, allUrls } }}
     >
       <Chat />
     </AppContextProvider>

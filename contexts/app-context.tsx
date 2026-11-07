@@ -7,6 +7,7 @@ export type AppContextValue = {
     name: string;
     headline: string;
     website?: string;
+    avatarUrl?: string;
     allUrls: Set<string>;
   };
 };

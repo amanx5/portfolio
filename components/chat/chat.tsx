@@ -39,6 +39,7 @@ export function Chat() {
         name={profile.name}
         headline={profile.headline}
         website={profile.website}
+        avatarUrl={profile.avatarUrl}
         showNewChat={!empty}
         onNewChat={newChat}
       />
