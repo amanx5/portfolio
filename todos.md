@@ -6,6 +6,18 @@ Optional
 ## Show tool calls in replies
 Good for UX, also benefits the visitors in a way that they can see the how the model is generating the answer from real sources using tools. This gives an indication to visitors that the answers are not self-made/invented.
 
+## Fall back to another model when the free one fails
+Optional
+
+The default `MODEL_ID` (`nvidia/nemotron-3.5-lightning-free`) is a free tier with tight per-minute limits. Sending a few questions quickly made the model call fail (likely a gateway/provider rate limit, not the Redis daily limiter), and the visitor saw "The assistant could not answer right now… (ref …)".
+
+`@promptfolio/ai` already has `createFailoverModel`: it tries models in order and moves to the next when one fails before sending any content, so the visitor only sees an error if every model fails.
+
+Fix:
+1. In `app/api/chat/route.ts`, wrap the model: the free `MODEL_ID` first, then a cheap paid gateway model.
+2. Add an optional `FALLBACK_MODEL_ID` env var, and document it in `.env.example`.
+3. Copy `attemptFirstChunkMs` and the other timeouts from the reference app (`../promptfolio/apps/portfolio/src/server/chat/model.ts`), keeping `limits.timeouts.firstChunkMs` above the sum of all attempts.
+
 ---
 
 # TODOs in the promptfolio libraries
