@@ -1,4 +1,5 @@
 {
   "formatVersion": 1,
-  "user": "amanx5"
+  "user": "amanx5",
+  "exclude": ["serverless-expressjs", "serverless-nodejs", "vanilla-textformatter"]
 }
