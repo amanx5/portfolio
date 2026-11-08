@@ -20,6 +20,9 @@ importers:
       '@promptfolio/core':
         specifier: ^0.0.2
         version: 0.0.2
+      '@promptfolio/source-github':
+        specifier: ^0.0.2
+        version: 0.0.2
       '@shadcn/react':
         specifier: ^0.3.1
         version: 0.3.1(@types/react@19.3.0)(react@19.3.0)
@@ -641,6 +644,10 @@ packages:
 
   '@promptfolio/core@0.0.2':
     resolution: {integrity: sha512-MawPmf0SYl+GWo4I1/4vYFW6Jg+W2U22YgfiA/XLvbKrv0jcTxv4Qxy9/JrRegUqbrRaUJLXToafaG6cILp1AQ==}
+    engines: {node: '>=22'}
+
+  '@promptfolio/source-github@0.0.2':
+    resolution: {integrity: sha512-Z/1lCkG5fTOMxlvRagbZRLClfnRus5Jw6BmWO3mIf5pz92YXy6EDNy7kUn+qi6Ofqafb8CmNZOBSF7tswEcXhw==}
     engines: {node: '>=22'}
 
   '@rtsao/scc@1.1.0':
@@ -3732,6 +3739,11 @@ snapshots:
 
   '@promptfolio/core@0.0.2':
     dependencies:
+      zod: 4.6.7
+
+  '@promptfolio/source-github@0.0.2':
+    dependencies:
+      '@promptfolio/core': 0.0.2
       zod: 4.6.7
 
   '@rtsao/scc@1.1.0': {}
