@@ -1,81 +1,24 @@
 # TODOs in this app
 
-## Show model id in replies
-Optional
+Implementation details for the next session are in [todos-next.md](todos-next.md).
 
-## Show tool calls in replies
-Good for UX, also benefits the visitors in a way that they can see the how the model is generating the answer from real sources using tools. This gives an indication to visitors that the answers are not self-made/invented.
-
-## Fall back to another model when the free one fails
-Optional
-
-The default `MODEL_ID` (`nvidia/nemotron-3.5-lightning-free`) is a free tier with tight per-minute limits. Sending a few questions quickly made the model call fail (likely a gateway/provider rate limit, not the Redis daily limiter), and the visitor saw "The assistant could not answer right now… (ref …)".
-
-`@promptfolio/ai` already has `createFailoverModel`: it tries models in order and moves to the next when one fails before sending any content, so the visitor only sees an error if every model fails.
-
-Fix:
-1. In `app/api/chat/route.ts`, wrap the model: the free `MODEL_ID` first, then a cheap paid gateway model.
-2. Add an optional `FALLBACK_MODEL_ID` env var, and document it in `.env.example`.
-3. Copy `attemptFirstChunkMs` and the other timeouts from the reference app (`../promptfolio/apps/portfolio/src/server/chat/model.ts`), keeping `limits.timeouts.firstChunkMs` above the sum of all attempts.
+- Show tool calls in replies
+- Show model id in replies (optional)
+- Fall back to another free model when the default one fails (optional)
+- Use the library's background GitHub refresh instead of `lib/github-refresh.ts`
 
 ---
 
 # TODOs in the promptfolio libraries
 
-## Stream tool calls 
-@promptfolio/ai currently strips tool chunks before they reach the browser. 
-Its forVisitor filter only passes text and step chunks (VISITOR_CHUNK_TYPES in chat-turn.ts:156).
-Responses have no tool calls in it. Showing them requires an option in Promptfolio.
+Published in `0.0.3`:
+- [x] Stream tool calls (opt-in `replyDetails`), with conversations kept on the server
+- [x] Include links in `listProfileRecords` results
+- [x] Stream model id
+- [x] Log model id
+- [x] Log more details about tool calls
+- [x] Refresh source snapshots in the background, without commits (opt-in)
 
-This has two drawbacks:
-- Ui can't show tool calls
-- Tool calls are lost between chat turns, model loses the context what he had executed and got in previous turn, resulting in responses without the sources link.
-
-## Include links in listProfileRecords results
-`listProfileRecords` returns each project's id, name, description, and skills, but not its links (`summarizeProject` in `grounding/profile-tools.ts`). Only `getProfileRecord(id)` returns links, one record per call.
-
-Weaker models stop after the list and answer without links. With `openai/gpt-4o-mini`, "with links" made 5 `listProfileRecords` calls, 0 `getProfileRecord` calls, and finished in 2 of 4 steps, so no limit stopped it. The answer said "along with links" but had none, or used `#` placeholders. The `additionalInstructions` workaround in `app/api/chat/route.ts` (call `getProfileRecord` for links) did not change this.
-
-Leaving links out is deliberate ("to keep list results small", comment above `summarizeRole`), but repository summaries already include their `url`, and ADR 0014 made links how answers show their sources.
-
-Fix:
-1. Add `links` to `summarizeProject`, and update the comment above it.
-2. Say the list includes links in the `listProfileRecords` description.
-3. Drop "or links" from the `getProfileRecord` rule in `system-prompt.ts`.
-4. Re-run the evaluation, and record the change in an ADR.
-
-## Stream model id
-Send model id in responses to browser.
-
-## Log model id
-Add model id in loggers of tool calls, response completions, etc. for easier debugging.
-
-## Log more details about tool calls
-
-The following logs looks like the same exact call is executed multiple times.
-
-```
-[chat 4d14a6d1] tool call { tool: 'listProfileRecords', outcome: 'listed' }
-[chat 4d14a6d1] tool call { tool: 'listProfileRecords', outcome: 'listed' }
-[chat 4d14a6d1] tool call { tool: 'listProfileRecords', outcome: 'listed' }
-[chat 4d14a6d1] tool call { tool: 'listProfileRecords', outcome: 'listed' }
-[chat 4d14a6d1] tool call { tool: 'listProfileRecords', outcome: 'listed' }
-```
-
-But in reality, model called the `listProfileRecords` for 5 different sections (experience, projects, repositories, contributions, education). Show additional details in tool calls logs for making them differenciable.
-
-## Source-web plugin
-Idea, name not final.
-
-A source package, like `@promptfolio/source-github`, that builds profile data from the owner's own websites and blogs (for example amankumar.cc), so consumers don't have to keep a hand-written `profile.json` in sync with what they already publish.
-
-Still being thought through in the "Source-web plugin for Promptfolio" session: what it reads (structured data, pages, feeds), how it maps onto the profile schema and its warnings, and when it fetches (build time vs. request time).
-
-## Refresh source snapshots in the background, without commits
-Promptfolio's documented refresh is a daily GitHub Actions job that commits the snapshot. That adds data commits to the repo and needs the workflow re-enabled after 60 quiet days in a public repo.
-
-This app refreshes inside itself instead ([lib/github-refresh.ts](lib/github-refresh.ts), [lib/github-source.ts](lib/github-source.ts)): the snapshot lives in Redis, and a chat request starts a refresh with `after()` once it is due. A lock lets only one request run it. A complete refresh waits 6 hours before the next one, a partial or failed one retries in 1 hour, and the stored snapshot stays in use until a new one is checked against the profile. Visitors never wait for GitHub.
-
-Move it into the libraries once it has run in production for a while:
-- Store-agnostic, like `ChatTurnLimiter` in `@promptfolio/ai`: the library takes a small store interface (get, set, lock) and a way to run work after the response, and the app supplies Redis and `after()`.
-- Needs a new ADR beside [ADR 0009](https://github.com/promptfolios/promptfolio/blob/main/docs/adr/0009-github-source-as-fetched-snapshot.md), which rejected "a hosted key-value store written by a cron route". Keep the committed snapshot as the default and add this as an opt-in mode.
+Open:
+- [ ] Source-web plugin: a source package that builds profile data from the owner's own websites and blogs. Idea, name
+  not final; still being thought through in the "Source-web plugin for Promptfolio" session.

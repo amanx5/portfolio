@@ -11,9 +11,9 @@
   "dependencies": {
     "@ai-sdk/react": "^4.0.163",
     "@base-ui/react": "^1.9.0",
-    "@promptfolio/ai": "^0.0.2",
-    "@promptfolio/core": "^0.0.2",
-    "@promptfolio/source-github": "^0.0.2",
+    "@promptfolio/ai": "^0.0.3",
+    "@promptfolio/core": "^0.0.3",
+    "@promptfolio/source-github": "^0.0.3",
     "@shadcn/react": "^0.3.1",
     "@upstash/redis": "^1.40.0",
     "@vercel/analytics": "^2.0.1",

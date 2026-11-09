@@ -1,6 +1,7 @@
 import { handleChatRequest } from "@promptfolio/ai";
 import { gateway } from "ai";
 import { after } from "next/server";
+import { chatStore, newOwnerId, ownerCookie, readOwner } from "@/lib/chat-history";
 import { chatLimiter } from "@/lib/chat-limit";
 import { refreshGitHubIfDue } from "@/lib/github-refresh";
 import { loadProfile } from "@/lib/github-source";
@@ -16,14 +17,6 @@ const chatLimitDisabled =
 // max duration this serverless route handler is allowed to run
 export const maxDuration = 60;
 
-// Partial fix for missing links in answers. Lookups are not kept between messages, and
-// listProfileRecords returns no project links, so models answer without them.
-// Works when a visitor asks for projects' links in one message; still fails for follow-ups,
-// and for broad questions where listing every section leaves too few tool calls for lookups.
-// Full issue and real fix: https://github.com/amanx5/portfolio/blob/main/todos.md#include-links-in-listprofilerecords-results
-const chatInstructions =
-  "Earlier lookups are not kept between messages. Before calling getProfileRecord, call listProfileRecords in the same turn to get the exact ids. listProfileRecords does not include links: when asked for links, call getProfileRecord for each record.";
-
 export async function POST(request: Request): Promise<Response> {
   // runs once the answer has been sent, so the visitor never waits for GitHub;
   // this visitor gets the stored snapshot, later ones get the refreshed one
@@ -37,10 +30,16 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  return handleChatRequest(request, {
+  // a visitor without the cookie gets a new owner id; its first question starts a conversation under it
+  const owner = readOwner(request) ?? newOwnerId();
+
+  const response = await handleChatRequest(request, {
     model: gateway(modelId),
     profile: profileResult.profile,
     limit: chatLimitDisabled ? null : { limiter: chatLimiter, identifyVisitor },
-    additionalInstructions: chatInstructions,
+    history: { store: chatStore, identifyOwner: async () => owner },
   });
+  // sent on every answer, so the cookie lasts as long as the conversations it names
+  response.headers.append("set-cookie", ownerCookie(owner));
+  return response;
 }

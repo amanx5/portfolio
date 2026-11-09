@@ -6,9 +6,18 @@ import { PromptInput } from "@/components/chat/prompt-input";
 import { StarterQuestions } from "@/components/chat/starter-questions";
 import { useAppContext } from "@/contexts/app-context";
 import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 
 const disclaimer =
-  "Replies come from an AI model and aren't stored here. A hash of your IP is kept for 24 hours to limit daily messages. Don't share personal information.";
+  "Replies come from an AI model. This chat is kept for 24 hours so it can continue, and a hash of your IP for 24 hours to limit daily messages. Don't share personal information.";
+
+// the server keeps the conversation, so only the new question and the message it follows are sent
+const transport = new DefaultChatTransport({
+  api: "/api/chat",
+  prepareSendMessagesRequest: ({ id, messages }) => ({
+    body: { id, message: messages.at(-1), parentId: messages.at(-2)?.id ?? null },
+  }),
+});
 
 export function Chat() {
   const { profile } = useAppContext();
@@ -21,7 +30,7 @@ export function Chat() {
     setMessages,
     clearError,
     regenerate,
-  } = useChat();
+  } = useChat({ transport });
 
   const busy = status === "submitted" || status === "streaming";
   const empty = messages.length === 0;

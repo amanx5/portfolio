@@ -15,14 +15,14 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@promptfolio/ai':
-        specifier: ^0.0.2
-        version: 0.0.2(ai@7.0.159(zod@4.6.7))
+        specifier: ^0.0.3
+        version: 0.0.3(ai@7.0.159(zod@4.6.7))
       '@promptfolio/core':
-        specifier: ^0.0.2
-        version: 0.0.2
+        specifier: ^0.0.3
+        version: 0.0.3
       '@promptfolio/source-github':
-        specifier: ^0.0.2
-        version: 0.0.2
+        specifier: ^0.0.3
+        version: 0.0.3
       '@shadcn/react':
         specifier: ^0.3.1
         version: 0.3.1(@types/react@19.3.0)(react@19.3.0)
@@ -636,18 +636,18 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@promptfolio/ai@0.0.2':
-    resolution: {integrity: sha512-FJ6+4RHpUF7htpzjQ6wR6SJ/+O+c0U0WpIBa1Q1z1HpV5HSt5mLzeycKyKzW1NaDIwkU3aVBi9kZTTPE33htXw==}
+  '@promptfolio/ai@0.0.3':
+    resolution: {integrity: sha512-q6GKhA59iqO6cTfdawlRRxjGfgyEV2CCi2Qo+ErP70K5RtbxnmWASdWGFHi75LPmj2mNdqWI1nE3HVB3VNEEmQ==}
     engines: {node: '>=22'}
     peerDependencies:
       ai: ^7.0.154
 
-  '@promptfolio/core@0.0.2':
-    resolution: {integrity: sha512-MawPmf0SYl+GWo4I1/4vYFW6Jg+W2U22YgfiA/XLvbKrv0jcTxv4Qxy9/JrRegUqbrRaUJLXToafaG6cILp1AQ==}
+  '@promptfolio/core@0.0.3':
+    resolution: {integrity: sha512-Pzmk4e2CvF14KKQzrYK8NtERbjHQL879ko6BlhxmwlYDIb88BpbEBKBhrwaxK8uDFNOkf9eXFurEMuSnMMZz5A==}
     engines: {node: '>=22'}
 
-  '@promptfolio/source-github@0.0.2':
-    resolution: {integrity: sha512-Z/1lCkG5fTOMxlvRagbZRLClfnRus5Jw6BmWO3mIf5pz92YXy6EDNy7kUn+qi6Ofqafb8CmNZOBSF7tswEcXhw==}
+  '@promptfolio/source-github@0.0.3':
+    resolution: {integrity: sha512-Uf209MpQZE9SubGWfdyAgipONZBtyqWbbXARbYVuHHakcr188ZHgPzaOqa42ew+BlvfgPdbvql5wreCZJbBrwQ==}
     engines: {node: '>=22'}
 
   '@rtsao/scc@1.1.0':
@@ -3731,19 +3731,19 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@promptfolio/ai@0.0.2(ai@7.0.159(zod@4.6.7))':
+  '@promptfolio/ai@0.0.3(ai@7.0.159(zod@4.6.7))':
     dependencies:
-      '@promptfolio/core': 0.0.2
+      '@promptfolio/core': 0.0.3
       ai: 7.0.159(zod@4.6.7)
       zod: 4.6.7
 
-  '@promptfolio/core@0.0.2':
+  '@promptfolio/core@0.0.3':
     dependencies:
       zod: 4.6.7
 
-  '@promptfolio/source-github@0.0.2':
+  '@promptfolio/source-github@0.0.3':
     dependencies:
-      '@promptfolio/core': 0.0.2
+      '@promptfolio/core': 0.0.3
       zod: 4.6.7
 
   '@rtsao/scc@1.1.0': {}
