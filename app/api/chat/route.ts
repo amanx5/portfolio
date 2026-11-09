@@ -1,8 +1,10 @@
 import { handleChatRequest } from "@promptfolio/ai";
 import { gateway } from "ai";
+import { after } from "next/server";
 import { chatLimiter } from "@/lib/chat-limit";
+import { refreshGitHubIfDue } from "@/lib/github-refresh";
+import { loadProfile } from "@/lib/github-source";
 import { identifyVisitor } from "@/lib/visitor";
-import { profileResult } from "@/lib/profile";
 
 // TODO: validate model id
 const modelId = process.env.MODEL_ID ?? "nvidia/nemotron-3.5-lightning-free";
@@ -23,6 +25,11 @@ const chatInstructions =
   "Earlier lookups are not kept between messages. Before calling getProfileRecord, call listProfileRecords in the same turn to get the exact ids. listProfileRecords does not include links: when asked for links, call getProfileRecord for each record.";
 
 export async function POST(request: Request): Promise<Response> {
+  // runs once the answer has been sent, so the visitor never waits for GitHub;
+  // this visitor gets the stored snapshot, later ones get the refreshed one
+  after(refreshGitHubIfDue);
+
+  const profileResult = await loadProfile();
   if (!profileResult.ok) {
     return new Response(
       "Failed to load the profile data. Please try again later.",

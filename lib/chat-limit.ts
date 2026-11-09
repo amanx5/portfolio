@@ -1,13 +1,11 @@
 import "server-only";
 import type { ChatTurnLimiter } from "@promptfolio/ai";
-import { Redis } from "@upstash/redis";
+import { redis } from "@/lib/redis";
 
 const KEY_PREFIX = "chat:turns";
 const WINDOW_SECONDS = 24 * 60 * 60;
 const VISITOR_CHAT_TURNS_CAP = 30;
 const SITE_CHAT_TURNS_CAP = 200;
-
-const redis = Redis.fromEnv();
 
 export const chatLimiter: ChatTurnLimiter = {
   // take checks the visitor's count before the site's. A visitor who is already over their limit returns early,
