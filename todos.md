@@ -70,3 +70,12 @@ Idea, name not final.
 A source package, like `@promptfolio/source-github`, that builds profile data from the owner's own websites and blogs (for example amankumar.cc), so consumers don't have to keep a hand-written `profile.json` in sync with what they already publish.
 
 Still being thought through in the "Source-web plugin for Promptfolio" session: what it reads (structured data, pages, feeds), how it maps onto the profile schema and its warnings, and when it fetches (build time vs. request time).
+
+## Refresh source snapshots in the background, without commits
+Promptfolio's documented refresh is a daily GitHub Actions job that commits the snapshot. That adds data commits to the repo and needs the workflow re-enabled after 60 quiet days in a public repo.
+
+This app refreshes inside itself instead ([lib/github-refresh.ts](lib/github-refresh.ts), [lib/github-source.ts](lib/github-source.ts)): the snapshot lives in Redis, and a chat request starts a refresh with `after()` once it is due. A lock lets only one request run it. A complete refresh waits 6 hours before the next one, a partial or failed one retries in 1 hour, and the stored snapshot stays in use until a new one is checked against the profile. Visitors never wait for GitHub.
+
+Move it into the libraries once it has run in production for a while:
+- Store-agnostic, like `ChatTurnLimiter` in `@promptfolio/ai`: the library takes a small store interface (get, set, lock) and a way to run work after the response, and the app supplies Redis and `after()`.
+- Needs a new ADR beside [ADR 0009](https://github.com/promptfolios/promptfolio/blob/main/docs/adr/0009-github-source-as-fetched-snapshot.md), which rejected "a hosted key-value store written by a cron route". Keep the committed snapshot as the default and add this as an opt-in mode.
