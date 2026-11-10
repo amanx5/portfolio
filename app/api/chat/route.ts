@@ -13,7 +13,9 @@ import { loadProfile } from "@/lib/github-source";
 import { replyDetails } from "@/lib/reply-details";
 import { identifyVisitor } from "@/lib/visitor";
 
-// TODO: validate model id
+// the id is not checked here: the gateway rejects an unknown id with a 404 "Model not found",
+// which is clearer than a local list that goes stale. A separate call to validate it first
+// is not worth the extra round trip on every chat request
 const modelId = process.env.MODEL_ID ?? "nvidia/nemotron-3.5-lightning-free";
 
 // lets local dev skip chat turn limits; never honoured in production

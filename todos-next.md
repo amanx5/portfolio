@@ -22,7 +22,6 @@ daily limiter), and the visitor saw "The assistant could not answer right now…
   `@shadcn/react` 0.3.1 then leaves `data-autoscrolling` set, which hides it. Prod is fine, so nothing was changed.
 - The refresh outcome (`not-due`, `complete`, …) is not logged: `loadProfile` does not return it. Failed and partial
   refreshes are logged by the library.
-- `// TODO: validate model id` in `app/api/chat/route.ts`.
 
 ## To check after the next deploy
 - A real GitHub refresh through the library: after a chat request once `github:refresh-after` has passed, the
