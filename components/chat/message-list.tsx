@@ -21,6 +21,7 @@ import {
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
 import { type UIMessage } from "@ai-sdk/react";
+import { isToolUIPart } from "ai";
 
 export function MessageList({
   messages,
@@ -36,7 +37,17 @@ export function MessageList({
   onRetry: () => void;
 }) {
   const retry = error && isDailyLimit(error) ? undefined : onRetry;
-  const lastId = messages.at(-1)?.id;
+  const last = messages.at(-1);
+  const lastId = last?.id;
+  // The reply's message is added empty before its first lookup or text arrives. "Thinking…" stays
+  // under the question until then, so it doesn't jump below that empty message.
+  const lastUserId = messages.findLast((m) => m.role === "user")?.id;
+  const waiting =
+    thinking ||
+    (busy &&
+      !last?.parts.some(
+        (part) => isToolUIPart(part) || (part.type === "text" && part.text),
+      ));
 
   return (
     <MessageScrollerProvider scrollPreviousItemPeek={0}>
@@ -61,7 +72,7 @@ export function MessageList({
                   error={m.id === lastId ? error : undefined}
                 />
                 {/* both rows below are positioned out of the layout, so swapping or removing them doesn't shrink the content and jump the scroll */}
-                {thinking && m.id === lastId && (
+                {waiting && m.id === lastUserId && (
                   <div
                     role="status"
                     className="absolute top-full left-0 mt-6 shimmer text-sm text-muted-foreground"
