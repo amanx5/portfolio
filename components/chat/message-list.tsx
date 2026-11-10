@@ -20,21 +20,17 @@ import {
   MessageScrollerProvider,
   MessageScrollerViewport,
 } from "@/components/ui/message-scroller";
-import { Spinner } from "@/components/ui/spinner";
 import { type UIMessage } from "@ai-sdk/react";
 import { isToolUIPart } from "ai";
 
 export function MessageList({
   messages,
-  loading,
   busy,
   thinking,
   error,
   onRetry,
 }: {
   messages: UIMessage[];
-  // the stored conversation is being fetched
-  loading: boolean;
   busy: boolean;
   thinking: boolean;
   error?: Error;
@@ -52,15 +48,6 @@ export function MessageList({
       !last?.parts.some(
         (part) => isToolUIPart(part) || (part.type === "text" && part.text),
       ));
-
-  // takes the list's place, so the prompt below stays where the chat will keep it
-  if (loading) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <Spinner className="size-5 text-muted-foreground" />
-      </div>
-    );
-  }
 
   return (
     <MessageScrollerProvider scrollPreviousItemPeek={0}>

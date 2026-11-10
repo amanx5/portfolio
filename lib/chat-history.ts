@@ -37,12 +37,6 @@ export async function storedChatId(owner: string): Promise<string | undefined> {
   return (await storedChat(owner))?.id;
 }
 
-// Whether the visitor has a stored conversation, without reading it. Only the key is checked,
-// so the full read can still find nothing usable under it.
-export async function hasStoredChat(owner: string): Promise<boolean> {
-  return (await redis.exists(`${KEY_PREFIX}:${owner}`)) > 0;
-}
-
 async function storedChat(owner: string): Promise<StoredChat | undefined> {
   // Upstash parses the JSON back; @promptfolio/ai validates the messages before use
   const stored = await redis.get<StoredChat>(`${KEY_PREFIX}:${owner}`);

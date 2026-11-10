@@ -1,9 +1,8 @@
-import { handleChatRequest, loadVisitorChat } from "@promptfolio/ai";
+import { handleChatRequest } from "@promptfolio/ai";
 import { gateway } from "ai";
 import {
   chatStore,
   deleteStoredChat,
-  hasStoredChat,
   newOwnerId,
   ownerCookie,
   readOwner,
@@ -51,49 +50,18 @@ export async function POST(request: Request): Promise<Response> {
   return response;
 }
 
-// The visitor's stored conversation, as the chat showed it: its id, and its messages with their
-// lookups and the model's name. Fetched when the visitor chooses to continue it.
-// The owner cookie alone finds it, so no chat id is sent. 204 when there is none (a new visitor,
+// The id of the visitor's stored conversation, so the start screen can link to it at /chat/<id>, where
+// its messages are loaded. The owner cookie alone finds it. 204 when there is none (a new visitor,
 // or after it expired), which is the usual case and not an error.
 export async function GET(request: Request): Promise<Response> {
   const owner = readOwner(request);
   if (owner === undefined) return new Response(null, { status: 204 });
-  const history = { store: chatStore, identifyOwner: async () => owner };
 
   try {
     const id = await storedChatId(owner);
     if (id === undefined) return new Response(null, { status: 204 });
-
-    // lookup titles come from the profile; if it fails to load, the messages are shown as text only
-    const profileResult = await loadProfile();
-    const messages = await loadVisitorChat(
-      request,
-      id,
-      profileResult.ok ? { history, replyDetails, profile: profileResult.profile } : { history },
-    );
-    if (messages === undefined) return new Response(null, { status: 204 });
-
     // private to this visitor, so it must never be cached and served to another
-    return Response.json({ id, messages }, { headers: { "cache-control": "no-store" } });
-  } catch (error) {
-    // only the type: a store error can repeat its credentials
-    console.error("[chat] stored conversation could not be loaded:", error instanceof Error ? error.name : "unknown");
-    return new Response(null, { status: 503 });
-  }
-}
-
-// Whether the visitor has a stored conversation: 200 if so, 204 if not. A key check only, so the
-// start screen can offer to continue it without loading the messages.
-export async function HEAD(request: Request): Promise<Response> {
-  const owner = readOwner(request);
-  if (owner === undefined) return new Response(null, { status: 204 });
-
-  try {
-    const stored = await hasStoredChat(owner);
-    return new Response(null, {
-      status: stored ? 200 : 204,
-      headers: { "cache-control": "no-store" },
-    });
+    return Response.json({ id }, { headers: { "cache-control": "no-store" } });
   } catch (error) {
     // only the type: a store error can repeat its credentials
     console.error("[chat] stored conversation could not be checked:", error instanceof Error ? error.name : "unknown");
@@ -101,8 +69,8 @@ export async function HEAD(request: Request): Promise<Response> {
   }
 }
 
-// Forgets the visitor's stored conversation, when they start a new chat, so a reload doesn't bring
-// it back. Another site can't trigger this: the owner cookie is SameSite=Lax, so it isn't sent
+// Forgets the visitor's stored conversation, when they start a new chat, so its address stops opening
+// it. Another site can't trigger this: the owner cookie is SameSite=Lax, so it isn't sent
 // with another site's DELETE request.
 export async function DELETE(request: Request): Promise<Response> {
   const owner = readOwner(request);

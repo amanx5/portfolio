@@ -7,11 +7,11 @@ import { ResumeChatButton } from "@/components/chat/resume-chat-button";
 import { StarterQuestions } from "@/components/chat/starter-questions";
 import { useAppContext } from "@/contexts/app-context";
 import { type UIMessage, useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import { useEffect, useRef, useState } from "react";
+import { DefaultChatTransport, generateId } from "ai";
+import { useEffect, useState } from "react";
 
-// what GET /api/chat returns
-type StoredChat = { id: string; messages: UIMessage[] };
+// a conversation the server kept, as /chat/<id> loads it
+export type StoredChat = { id: string; messages: UIMessage[] };
 
 const disclaimer =
   "Replies come from an AI model. This chat is kept for 24 hours so it can continue, and a hash of your IP for 24 hours to limit daily messages. Don't share personal information.";
@@ -24,83 +24,62 @@ const transport = new DefaultChatTransport({
   }),
 });
 
-export function Chat() {
+// `stored` is the chat that /chat/<id> opened; without it, a new chat starts.
+export function Chat({ stored }: { stored?: StoredChat }) {
   const { profile } = useAppContext();
-  // whether the visitor has a stored conversation to offer on the start screen
-  const [hasPrevious, setHasPrevious] = useState(false);
-  // its messages are being fetched, after the visitor chose to continue it
-  const [resuming, setResuming] = useState(false);
-  // cancels that fetch when the visitor starts a new chat instead
-  const resumeRequest = useRef<AbortController>(null);
-  // the stored conversation once it has been fetched
-  const [resumed, setResumed] = useState<StoredChat>();
-  const {
-    messages,
-    sendMessage,
-    status,
-    error,
-    stop,
-    setMessages,
-    clearError,
-    regenerate,
-    // a new id makes useChat start over from these messages, which is how the stored chat is shown
-  } = useChat({ id: resumed?.id, messages: resumed?.messages, transport });
+  // The chat on screen. A new id makes useChat start over, which is how New chat clears it.
+  const [chat, setChat] = useState<StoredChat | undefined>(stored);
+  // the id of the visitor's stored conversation, to offer it on the start screen
+  const [previousId, setPreviousId] = useState<string>();
+  const conversation = useChat({ id: chat?.id, messages: chat?.messages, transport });
+  // Not `id`: without one given, useChat makes it when it is first read. Read only in effects,
+  // it is made in the browser; the start screen is prerendered, so one made while rendering
+  // would be shared by every visitor.
+  const { messages, sendMessage, status, error, stop, regenerate } = conversation;
 
-  // Check whether the visitor has a stored conversation, to offer it on the start screen. A HEAD
-  // request, so its messages are only fetched if the visitor continues it. The server finds it by cookie.
+  // Look up the visitor's stored conversation, to offer it on the start screen. The server finds it
+  // by cookie; only its id comes back, and the link opens it at /chat/<id>. Not needed when /chat/<id>
+  // has already opened it.
   useEffect(() => {
+    if (stored) return;
     let ignore = false;
-    fetch("/api/chat", { method: "HEAD" })
+    fetch("/api/chat")
       // 204: nothing stored
-      .then((response) => response.status === 200)
-      .catch(() => false) // the chat still works without the earlier conversation
-      .then((stored) => {
-        if (!ignore) setHasPrevious(stored);
-      });
+      .then((response) => (response.status === 200 ? response.json() : undefined))
+      .then((found?: { id: string }) => {
+        if (!ignore) setPreviousId(found?.id);
+      })
+      .catch(() => {}); // the chat still works without the earlier conversation
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [stored]);
+
+  // Once the chat has messages, the address names it, as /chat/<id>. replaceState changes the address
+  // without loading the page, so the reply keeps streaming, and keeps the start screen out of
+  // history, so Back leaves the site instead of showing an empty chat.
+  const hasMessages = messages.length > 0;
+  useEffect(() => {
+    if (!hasMessages) return;
+    const path = `/chat/${conversation.id}`;
+    if (window.location.pathname !== path) window.history.replaceState(null, "", path);
+  }, [conversation, hasMessages]);
 
   const busy = status === "submitted" || status === "streaming";
-  // the chat view opens as soon as the visitor continues, with a loader until the messages arrive
-  const empty = messages.length === 0 && !resuming;
+  const empty = messages.length === 0;
   const firstName = profile.name.split(" ")[0];
   const send = (text: string) => {
     // a new chat replaces the stored one on the server, so it can't be continued any more
-    resumeRequest.current?.abort();
-    setHasPrevious(false);
-    setResuming(false);
+    setPreviousId(undefined);
     sendMessage({ text });
   };
-  const resume = async () => {
-    const request = new AbortController();
-    resumeRequest.current = request;
-    setResuming(true);
-    try {
-      const response = await fetch("/api/chat", { signal: request.signal });
-      // 204: it expired or was replaced since the check, so there is nothing to continue
-      if (response.status === 204) setHasPrevious(false);
-      if (response.status === 200) {
-        setResumed((await response.json()) as StoredChat);
-        // it's open now, and the next new chat forgets it
-        setHasPrevious(false);
-      }
-    } catch {
-      // a failed fetch goes back to the start screen with the link, so it can be tried again;
-      // an aborted one changes nothing
-    }
-    if (!request.signal.aborted) setResuming(false);
-  };
   const newChat = async () => {
-    // a stored chat still loading would open over the new one
-    resumeRequest.current?.abort();
-    setResuming(false);
-    setHasPrevious(false);
     await stop(); // a reply still streaming would add its message back
-    setMessages([]);
-    clearError();
-    // forget the stored chat too, so a reload doesn't bring it back; if this fails,
+    setChat({ id: generateId(), messages: [] });
+    setPreviousId(undefined);
+    // back to the start screen's address; the new chat gets its own after its first question
+    window.history.replaceState(null, "", "/");
+    // forget the stored chat too, so its address stops opening it; if this fails,
     // the first message of the new chat replaces it anyway
     fetch("/api/chat", { method: "DELETE" }).catch(() => {});
   };
@@ -126,7 +105,6 @@ export function Chat() {
         ) : (
           <MessageList
             messages={messages}
-            loading={resuming}
             busy={busy}
             thinking={status === "submitted"}
             error={error}
@@ -137,7 +115,7 @@ export function Chat() {
         <div className="mx-auto flex w-full max-w-xl flex-col gap-4 px-4">
           <PromptInput busy={busy} onSend={send} onStop={stop} />
           {empty && <StarterQuestions firstName={firstName} onSelect={send} />}
-          {empty && <ResumeChatButton visible={hasPrevious} onClick={resume} />}
+          {empty && <ResumeChatButton chatId={previousId} />}
         </div>
       </main>
 

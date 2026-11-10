@@ -1,9 +1,6 @@
-import { profileLinkUrls } from "@promptfolio/core";
 import type { Metadata } from "next";
-import { Chat } from "@/components/chat/chat";
-import { AppContextProvider } from "@/contexts/app-context";
+import { ChatPage } from "@/components/chat/chat-page";
 import { profileResult } from "@/lib/profile";
-import { avatarUrl } from "@/lib/site";
 
 // The profile is bundled JSON, so a static metadata object can read it; no generateMetadata needed.
 // If the profile fails to load, the layout's defaults are used.
@@ -26,25 +23,7 @@ function profileMetadata(): Metadata {
   };
 }
 
+// A new chat; it moves to /chat/<id> once its first question is sent.
 export default function Home() {
-  if (!profileResult.ok) {
-    console.error("Profile load failed with issues:\n", profileResult.issues);
-    return "Something went wrong while loading the profile data. Please try again later.";
-  }
-
-  if (profileResult.warnings.length) {
-    console.warn("Loaded profile with warnings:\n", profileResult.warnings);
-  }
-
-  const allUrls = new Set(profileLinkUrls(profileResult.profile));
-  const { name, headline } = profileResult.profile.identity;
-  const { links } = profileResult.profile;
-
-  return (
-    <AppContextProvider
-      value={{ profile: { name, headline, links, avatarUrl, allUrls } }}
-    >
-      <Chat />
-    </AppContextProvider>
-  );
+  return <ChatPage />;
 }
