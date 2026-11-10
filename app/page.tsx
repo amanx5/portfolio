@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ChatPage } from "@/components/chat/chat-page";
+import { ChatPage } from "@/components/chat-page";
 import { profileResult } from "@/lib/profile";
 
 // The profile is bundled JSON, so a static metadata object can read it; no generateMetadata needed.

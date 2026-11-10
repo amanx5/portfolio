@@ -1,13 +1,14 @@
 "use client";
 
-import { Header } from "@/components/chat/header/header";
+import { Header } from "@/components/header/header";
 import { MessageList } from "@/components/chat/message-list";
-import { PromptInput } from "@/components/chat/prompt-input";
-import { ResumeChatButton } from "@/components/chat/resume-chat-button";
-import { StarterQuestions } from "@/components/chat/starter-questions";
+import { PromptInput } from "@/components/prompt-input";
+import { ResumeChatButton } from "@/components/home/resume-chat-button";
+import { StarterQuestions } from "@/components/home/starter-questions";
 import { useAppContext } from "@/contexts/app-context";
 import { type UIMessage, useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, generateId } from "ai";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 // a conversation the server kept, as /chat/<id> loads it
@@ -27,8 +28,17 @@ const transport = new DefaultChatTransport({
 // `stored` is the chat that /chat/<id> opened; without it, a new chat starts.
 export function Chat({ stored }: { stored?: StoredChat }) {
   const { profile } = useAppContext();
-  // The chat on screen. A new id makes useChat start over, which is how New chat clears it.
+  // The chat on screen. A new id makes useChat start over.
   const [chat, setChat] = useState<StoredChat | undefined>(stored);
+  // A chat begun on / stays on that page after its address becomes /chat/<id>, so the header's
+  // Chat link back to / keeps the same page on screen; it is cleared here instead. Leaving / for
+  // /chat/<id> doesn't count, only coming back to it.
+  const pathname = usePathname();
+  const [shownPath, setShownPath] = useState(pathname);
+  if (pathname !== shownPath) {
+    setShownPath(pathname);
+    if (pathname === "/") setChat({ id: generateId(), messages: [] });
+  }
   // the id of the visitor's stored conversation, to offer it on the start screen
   const [previousId, setPreviousId] = useState<string>();
   const conversation = useChat({ id: chat?.id, messages: chat?.messages, transport });
@@ -39,7 +49,7 @@ export function Chat({ stored }: { stored?: StoredChat }) {
 
   // Look up the visitor's stored conversation, to offer it on the start screen. The server finds it
   // by cookie; only its id comes back, and the link opens it at /chat/<id>. Not needed when /chat/<id>
-  // has already opened it.
+  // has already opened it. Asked again when the chat starts over, so the one just left is offered.
   useEffect(() => {
     if (stored) return;
     let ignore = false;
@@ -53,7 +63,7 @@ export function Chat({ stored }: { stored?: StoredChat }) {
     return () => {
       ignore = true;
     };
-  }, [stored]);
+  }, [stored, chat]);
 
   // Once the chat has messages, the address names it, as /chat/<id>. replaceState changes the address
   // without loading the page, so the reply keeps streaming, and keeps the start screen out of
@@ -73,16 +83,6 @@ export function Chat({ stored }: { stored?: StoredChat }) {
     setPreviousId(undefined);
     sendMessage({ text });
   };
-  const newChat = async () => {
-    await stop(); // a reply still streaming would add its message back
-    setChat({ id: generateId(), messages: [] });
-    setPreviousId(undefined);
-    // back to the start screen's address; the new chat gets its own after its first question
-    window.history.replaceState(null, "", "/");
-    // forget the stored chat too, so its address stops opening it; if this fails,
-    // the first message of the new chat replaces it anyway
-    fetch("/api/chat", { method: "DELETE" }).catch(() => {});
-  };
 
   return (
     <div className="flex h-dvh w-full flex-col gap-4 pb-8">
@@ -91,8 +91,6 @@ export function Chat({ stored }: { stored?: StoredChat }) {
         headline={profile.headline}
         links={profile.links}
         avatarUrl={profile.avatarUrl}
-        showNewChat={!empty}
-        onNewChat={newChat}
       />
       {/* same tree in both states, so the textarea keeps focus after the first send */}
       <main

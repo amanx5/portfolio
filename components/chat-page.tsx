@@ -1,5 +1,5 @@
 import { profileLinkUrls } from "@promptfolio/core";
-import { Chat, type StoredChat } from "@/components/chat/chat";
+import { Chat, type StoredChat } from "@/components/chat";
 import { AppContextProvider } from "@/contexts/app-context";
 import { profileResult } from "@/lib/profile";
 import { avatarUrl } from "@/lib/site";

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { metadata as homeMetadata } from "@/app/page";
-import { ChatPage } from "@/components/chat/chat-page";
+import { ChatPage } from "@/components/chat-page";
 import { chatStore, readOwner } from "@/lib/chat-history";
 import { loadProfile } from "@/lib/github-source";
 import { replyDetails } from "@/lib/reply-details";
