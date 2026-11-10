@@ -66,6 +66,7 @@ export function MessageList({
               >
                 <ChatMessage
                   message={m}
+                  streaming={busy && m.id === lastId}
                   showActions={!(busy && m.id === lastId)}
                   // only the last answer: regenerating an earlier one would drop everything after it
                   onRetry={m.id === lastId ? retry : undefined}
@@ -97,11 +98,13 @@ export function MessageList({
 
 function ChatMessage({
   message,
+  streaming,
   showActions,
   onRetry,
   error,
 }: {
   message: UIMessage;
+  streaming: boolean;
   showActions: boolean;
   onRetry?: () => void;
   error?: Error;
@@ -112,6 +115,15 @@ function ChatMessage({
     .join("");
   // @promptfolio/ai sends the answering model's name as metadata when the reply finishes
   const { model } = (message.metadata ?? {}) as { model?: string };
+  // The lookups are done but no words have arrived yet: the model is reading what it found, or
+  // deciding on another lookup. Shown where the answer will start, so the first words don't move it.
+  // (While a lookup runs, its header already says so.)
+  const lookups = message.parts.filter(isToolUIPart);
+  const thinking =
+    streaming &&
+    !text &&
+    lookups.length > 0 &&
+    lookups.every((part) => part.state === "output-available");
 
   return (
     <Message align={isUser ? "end" : "start"}>
@@ -122,7 +134,15 @@ function ChatMessage({
           variant={isUser ? "muted" : "ghost"}
         >
           <BubbleContent>
-            {isUser ? text : <Answer>{text}</Answer>}
+            {isUser ? (
+              text
+            ) : thinking ? (
+              <span role="status" className="shimmer text-sm text-muted-foreground">
+                Thinking…
+              </span>
+            ) : (
+              <Answer>{text}</Answer>
+            )}
           </BubbleContent>
         </Bubble>
 

@@ -18,9 +18,8 @@ daily limiter), and the visitor saw "The assistant could not answer right now…
 4. `replyDetails.model` then receives the answering entry's label, so the name under a reply stays correct.
 
 ## Small things
-- The lookups list opens without its slide and fade: `components/ai-elements/chain-of-thought.tsx` targets radix's
-  `data-[state=open]`, while this project's base-ui collapsible sets `data-open`.
-- After the lookups finish and before the first words arrive, no "Thinking…" shows.
+- Dev server only: after a reload, the restored chat has no scrollbar. React Strict Mode remounts the scroller, and
+  `@shadcn/react` 0.3.1 then leaves `data-autoscrolling` set, which hides it. Prod is fine, so nothing was changed.
 - The refresh outcome (`not-due`, `complete`, …) is not logged: `loadProfile` does not return it. Failed and partial
   refreshes are logged by the library.
 - `// TODO: validate model id` in `app/api/chat/route.ts`.
