@@ -110,6 +110,8 @@ function ChatMessage({
   const text = message.parts
     .map((part) => (part.type === "text" ? part.text : ""))
     .join("");
+  // @promptfolio/ai sends the answering model's name as metadata when the reply finishes
+  const { model } = (message.metadata ?? {}) as { model?: string };
 
   return (
     <Message align={isUser ? "end" : "start"}>
@@ -128,8 +130,9 @@ function ChatMessage({
         {!isUser && error && <ErrorText error={error} />}
 
         {!isUser && showActions && text && (
-          <MessageFooter>
+          <MessageFooter className="gap-2">
             <MessageActions text={text} onRetry={onRetry} />
+            {model && <span className="font-normal">{model}</span>}
           </MessageFooter>
         )}
       </MessageContent>
