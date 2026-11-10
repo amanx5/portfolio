@@ -3,6 +3,7 @@ import { gateway } from "ai";
 import {
   chatStore,
   deleteStoredChat,
+  hasStoredChat,
   newOwnerId,
   ownerCookie,
   readOwner,
@@ -51,7 +52,7 @@ export async function POST(request: Request): Promise<Response> {
 }
 
 // The visitor's stored conversation, as the chat showed it: its id, and its messages with their
-// lookups and the model's name. Used to show the conversation again after a reload.
+// lookups and the model's name. Fetched when the visitor chooses to continue it.
 // The owner cookie alone finds it, so no chat id is sent. 204 when there is none (a new visitor,
 // or after it expired), which is the usual case and not an error.
 export async function GET(request: Request): Promise<Response> {
@@ -77,6 +78,25 @@ export async function GET(request: Request): Promise<Response> {
   } catch (error) {
     // only the type: a store error can repeat its credentials
     console.error("[chat] stored conversation could not be loaded:", error instanceof Error ? error.name : "unknown");
+    return new Response(null, { status: 503 });
+  }
+}
+
+// Whether the visitor has a stored conversation: 200 if so, 204 if not. A key check only, so the
+// start screen can offer to continue it without loading the messages.
+export async function HEAD(request: Request): Promise<Response> {
+  const owner = readOwner(request);
+  if (owner === undefined) return new Response(null, { status: 204 });
+
+  try {
+    const stored = await hasStoredChat(owner);
+    return new Response(null, {
+      status: stored ? 200 : 204,
+      headers: { "cache-control": "no-store" },
+    });
+  } catch (error) {
+    // only the type: a store error can repeat its credentials
+    console.error("[chat] stored conversation could not be checked:", error instanceof Error ? error.name : "unknown");
     return new Response(null, { status: 503 });
   }
 }
