@@ -38,6 +38,8 @@ export async function POST(request: Request): Promise<Response> {
     profile: profileResult.profile,
     limit: chatLimitDisabled ? null : { limiter: chatLimiter, identifyVisitor },
     history: { store: chatStore, identifyOwner: async () => owner },
+    // stream each profile lookup (section and record name only), shown above the answer
+    replyDetails: { tools: true },
   });
   // sent on every answer, so the cookie lasts as long as the conversations it names
   response.headers.append("set-cookie", ownerCookie(owner));

@@ -4,6 +4,7 @@ import {
   ErrorText,
   isDailyLimit,
 } from "@/components/chat/chat-error";
+import { Lookups } from "@/components/chat/lookups";
 import { MessageActions } from "@/components/chat/message-actions/message-actions";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import {
@@ -102,6 +103,7 @@ function ChatMessage({
   return (
     <Message align={isUser ? "end" : "start"}>
       <MessageContent>
+        {!isUser && <Lookups parts={message.parts} />}
         <Bubble
           align={isUser ? "end" : "start"}
           variant={isUser ? "muted" : "ghost"}
