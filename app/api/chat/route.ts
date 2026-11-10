@@ -1,9 +1,7 @@
 import { handleChatRequest } from "@promptfolio/ai";
 import { gateway } from "ai";
-import { after } from "next/server";
 import { chatStore, newOwnerId, ownerCookie, readOwner } from "@/lib/chat-history";
 import { chatLimiter } from "@/lib/chat-limit";
-import { refreshGitHubIfDue } from "@/lib/github-refresh";
 import { loadProfile } from "@/lib/github-source";
 import { identifyVisitor } from "@/lib/visitor";
 
@@ -18,10 +16,7 @@ const chatLimitDisabled =
 export const maxDuration = 60;
 
 export async function POST(request: Request): Promise<Response> {
-  // runs once the answer has been sent, so the visitor never waits for GitHub;
-  // this visitor gets the stored snapshot, later ones get the refreshed one
-  after(refreshGitHubIfDue);
-
+  // also schedules the GitHub refresh for after the answer has been sent, if one is due
   const profileResult = await loadProfile();
   if (!profileResult.ok) {
     return new Response(

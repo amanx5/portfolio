@@ -2,10 +2,7 @@
 
 Implementation details for the next session are in [todos-next.md](todos-next.md).
 
-- Show tool calls in replies
-- Show model id in replies (optional)
 - Fall back to another free model when the default one fails (optional)
-- Use the library's background GitHub refresh instead of `lib/github-refresh.ts`
 
 ---
 
