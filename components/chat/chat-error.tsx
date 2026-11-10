@@ -8,8 +8,14 @@ import {
 import { APICallError } from "ai";
 
 // Refusals from @promptfolio/ai arrive as an APICallError whose message is the server's visitor text.
-export function isDailyLimit(error: Error) {
-  return APICallError.isInstance(error) && error.statusCode === 429; // retrying can't help until tomorrow
+// Retrying can't help for these, so no Retry button is shown:
+// 429: the daily limit, until tomorrow
+// 409: the server no longer has this conversation (kept for 24 hours); only a new chat works
+export function cannotRetry(error: Error) {
+  return (
+    APICallError.isInstance(error) &&
+    (error.statusCode === 429 || error.statusCode === 409)
+  );
 }
 
 export function ErrorText({ error }: { error: Error }) {

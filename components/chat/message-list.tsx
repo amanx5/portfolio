@@ -2,7 +2,7 @@ import { Answer } from "@/components/chat/answer";
 import {
   ErrorAnswer,
   ErrorText,
-  isDailyLimit,
+  cannotRetry,
 } from "@/components/chat/chat-error";
 import { Lookups } from "@/components/chat/lookups";
 import { MessageActions } from "@/components/chat/message-actions/message-actions";
@@ -36,7 +36,7 @@ export function MessageList({
   error?: Error;
   onRetry: () => void;
 }) {
-  const retry = error && isDailyLimit(error) ? undefined : onRetry;
+  const retry = error && cannotRetry(error) ? undefined : onRetry;
   const last = messages.at(-1);
   const lastId = last?.id;
   // The reply's message is added empty before its first lookup or text arrives. "Thinking…" stays

@@ -3,11 +3,6 @@
 The app is on `@promptfolio/*` `^0.0.3`: the server keeps the conversation in Redis, replies show their profile
 lookups and the model's name, and the GitHub refresh runs in the library. What follows is still open.
 
-## Retry on a lost conversation
-A conversation is kept for 24 hours. After that, a follow-up answers 409 with the visitor text
-`unknownConversation` ("…Please start a new chat."), but the Retry button still shows and can't help. In
-`components/chat/chat-error.tsx`, treat 409 like the daily limit (no Retry), or offer "New chat" in its place.
-
 ## Show a stored conversation after a reload
 The server stores each conversation, but a reload shows an empty chat.
 
