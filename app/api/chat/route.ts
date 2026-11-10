@@ -1,8 +1,16 @@
-import { handleChatRequest } from "@promptfolio/ai";
+import { handleChatRequest, loadVisitorChat } from "@promptfolio/ai";
 import { gateway } from "ai";
-import { chatStore, newOwnerId, ownerCookie, readOwner } from "@/lib/chat-history";
+import {
+  chatStore,
+  deleteStoredChat,
+  newOwnerId,
+  ownerCookie,
+  readOwner,
+  storedChatId,
+} from "@/lib/chat-history";
 import { chatLimiter } from "@/lib/chat-limit";
 import { loadProfile } from "@/lib/github-source";
+import { replyDetails } from "@/lib/reply-details";
 import { identifyVisitor } from "@/lib/visitor";
 
 // TODO: validate model id
@@ -33,14 +41,58 @@ export async function POST(request: Request): Promise<Response> {
     profile: profileResult.profile,
     limit: chatLimitDisabled ? null : { limiter: chatLimiter, identifyVisitor },
     history: { store: chatStore, identifyOwner: async () => owner },
-    replyDetails: {
-      // stream each profile lookup (section and record name only), shown above the answer
-      tools: true,
-      // name shown under the answer: the model id without its provider ("nvidia/nemotron-…" -> "nemotron-…")
-      model: (id) => id.split("/").at(-1),
-    },
+    replyDetails,
   });
   // sent on every answer, so the cookie lasts as long as the conversations it names
   response.headers.append("set-cookie", ownerCookie(owner));
   return response;
+}
+
+// The visitor's stored conversation, as the chat showed it: its id, and its messages with their
+// lookups and the model's name. Used to show the conversation again after a reload.
+// The owner cookie alone finds it, so no chat id is sent. 204 when there is none (a new visitor,
+// or after it expired), which is the usual case and not an error.
+export async function GET(request: Request): Promise<Response> {
+  const owner = readOwner(request);
+  if (owner === undefined) return new Response(null, { status: 204 });
+  const history = { store: chatStore, identifyOwner: async () => owner };
+
+  try {
+    const id = await storedChatId(owner);
+    if (id === undefined) return new Response(null, { status: 204 });
+
+    // lookup titles come from the profile; if it fails to load, the messages are shown as text only
+    const profileResult = await loadProfile();
+    const messages = await loadVisitorChat(
+      request,
+      id,
+      profileResult.ok ? { history, replyDetails, profile: profileResult.profile } : { history },
+    );
+    if (messages === undefined) return new Response(null, { status: 204 });
+
+    // private to this visitor, so it must never be cached and served to another
+    return Response.json({ id, messages }, { headers: { "cache-control": "no-store" } });
+  } catch (error) {
+    // only the type: a store error can repeat its credentials
+    console.error("[chat] stored conversation could not be loaded:", error instanceof Error ? error.name : "unknown");
+    return new Response(null, { status: 503 });
+  }
+}
+
+// Forgets the visitor's stored conversation, when they start a new chat, so a reload doesn't bring
+// it back. Another site can't trigger this: the owner cookie is SameSite=Lax, so it isn't sent
+// with another site's DELETE request.
+export async function DELETE(request: Request): Promise<Response> {
+  const owner = readOwner(request);
+  // nothing can be stored without the cookie
+  if (owner === undefined) return new Response(null, { status: 204 });
+
+  try {
+    await deleteStoredChat(owner);
+    return new Response(null, { status: 204 });
+  } catch (error) {
+    // only the type: a store error can repeat its credentials
+    console.error("[chat] stored conversation could not be deleted:", error instanceof Error ? error.name : "unknown");
+    return new Response(null, { status: 503 });
+  }
 }

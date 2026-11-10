@@ -10,18 +10,39 @@ const OWNER_COOKIE = "chat-owner";
 const OWNER_PATTERN = /^[A-Za-z0-9_-]{22}$/;
 export const RETENTION_SECONDS = 24 * 60 * 60;
 
-// One key per conversation, under the owner and the chat id together, so one visitor's chat id
-// never finds another visitor's conversation. Each save resets the expiry.
+type StoredChat = { id: string; messages: UIMessage[] };
+
+// One conversation per visitor, in one key under the owner: the site shows a single chat, so a new
+// chat replaces the stored one. The cookie alone then finds it again after a reload.
+// Each save resets the expiry.
 export const chatStore: ChatStore = {
   async load(owner, chatId) {
-    // Upstash parses the JSON back; @promptfolio/ai validates the messages before use
-    const messages = await redis.get<UIMessage[]>(`${KEY_PREFIX}:${owner}:${chatId}`);
-    return messages ?? undefined;
+    const stored = await storedChat(owner);
+    // an older chat's id (for example from another tab) no longer finds anything
+    return stored?.id === chatId ? stored.messages : undefined;
   },
   async save(owner, chatId, messages) {
-    await redis.set(`${KEY_PREFIX}:${owner}:${chatId}`, messages, { ex: RETENTION_SECONDS });
+    const chat: StoredChat = { id: chatId, messages };
+    await redis.set(`${KEY_PREFIX}:${owner}`, chat, { ex: RETENTION_SECONDS });
   },
 };
+
+// Forgets the visitor's stored conversation, when they start a new chat.
+export async function deleteStoredChat(owner: string): Promise<void> {
+  await redis.del(`${KEY_PREFIX}:${owner}`);
+}
+
+// The id of the visitor's stored conversation, if there is one.
+export async function storedChatId(owner: string): Promise<string | undefined> {
+  return (await storedChat(owner))?.id;
+}
+
+async function storedChat(owner: string): Promise<StoredChat | undefined> {
+  // Upstash parses the JSON back; @promptfolio/ai validates the messages before use
+  const stored = await redis.get<StoredChat>(`${KEY_PREFIX}:${owner}`);
+  // read by shape: anything else under the key counts as no conversation
+  return typeof stored?.id === "string" && Array.isArray(stored.messages) ? stored : undefined;
+}
 
 // random and unguessable, because it is the only key to a visitor's conversations
 export function newOwnerId(): string {

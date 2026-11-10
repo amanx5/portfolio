@@ -2,7 +2,6 @@
 
 Implementation details for the next session are in [todos-next.md](todos-next.md).
 
-- Show a stored conversation again after a reload
 - Fall back to another free model when the default one fails (optional)
 
 ---
