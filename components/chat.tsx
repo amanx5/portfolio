@@ -111,7 +111,9 @@ export function Chat({ stored }: { stored?: StoredChat }) {
         )}
 
         <div className="mx-auto flex w-full max-w-xl flex-col gap-4 px-4">
-          <PromptInput busy={busy} onSend={send} onStop={stop} />
+          {/* keyed by the chat, so starting over from the header's Chat link mounts it again and
+              autoFocus puts the cursor back in it */}
+          <PromptInput key={chat?.id} busy={busy} onSend={send} onStop={stop} />
           {empty && <StarterQuestions firstName={firstName} onSelect={send} />}
           {empty && <ResumeChatButton chatId={previousId} />}
         </div>

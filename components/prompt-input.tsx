@@ -44,6 +44,7 @@ export function PromptInput({
               formRef.current?.requestSubmit();
             }
           }}
+          autoFocus
           placeholder="Ask anything"
           aria-label="Message"
           className="min-h-0 max-h-48 [scrollbar-width:thin]"
