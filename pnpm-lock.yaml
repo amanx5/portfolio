@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@promptfolio/core': file:vendor/promptfolio-core-e65256a.tgz
-  '@promptfolio/ai': file:vendor/promptfolio-ai-e65256a.tgz
-  '@promptfolio/source-remote': file:vendor/promptfolio-source-remote-e65256a.tgz
-
 importers:
 
   .:
@@ -20,17 +15,17 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@promptfolio/ai':
-        specifier: file:vendor/promptfolio-ai-e65256a.tgz
-        version: file:vendor/promptfolio-ai-e65256a.tgz(ai@7.0.159(zod@4.6.7))
+        specifier: ^0.0.4
+        version: 0.0.4(ai@7.0.159(zod@4.6.7))
       '@promptfolio/core':
-        specifier: file:vendor/promptfolio-core-e65256a.tgz
-        version: file:vendor/promptfolio-core-e65256a.tgz
+        specifier: ^0.0.4
+        version: 0.0.4
       '@promptfolio/source-github':
-        specifier: ^0.0.3
-        version: 0.0.3
+        specifier: ^0.0.4
+        version: 0.0.4
       '@promptfolio/source-remote':
-        specifier: file:vendor/promptfolio-source-remote-e65256a.tgz
-        version: file:vendor/promptfolio-source-remote-e65256a.tgz
+        specifier: ^0.0.4
+        version: 0.0.4
       '@radix-ui/react-use-controllable-state':
         specifier: ^1.3.0
         version: 1.3.0(@types/react@19.3.0)(react@19.3.0)
@@ -647,25 +642,22 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@promptfolio/ai@file:vendor/promptfolio-ai-e65256a.tgz':
-    resolution: {integrity: sha512-dxbyzetqOiykPdtFBvKPJwWVuS1RfQjnnb1O5aeCfPH4E4isgxBmhu/TI91tPt/eV29+MPbDicJOSkz4nL8VUA==, tarball: file:vendor/promptfolio-ai-e65256a.tgz}
-    version: 0.0.3
+  '@promptfolio/ai@0.0.4':
+    resolution: {integrity: sha512-ZrhzcNA2VMhWavWzSzgo1oCcVEOrmqlN1E6iSKneO/dsYB+SPalgLSF8WmK9VkD8yPSV2Lxe2mHkDWqU6R176g==}
     engines: {node: '>=22'}
     peerDependencies:
       ai: ^7.0.154
 
-  '@promptfolio/core@file:vendor/promptfolio-core-e65256a.tgz':
-    resolution: {integrity: sha512-ugVPWZMP5ETv3ay7GTHOaAtElJYRac0Kpv4DzRyaHsAWAlfEiVmMLIjCAeItse3SxxWnxLEAOBni8pcx7S/vng==, tarball: file:vendor/promptfolio-core-e65256a.tgz}
-    version: 0.0.3
+  '@promptfolio/core@0.0.4':
+    resolution: {integrity: sha512-IaiCcHTG0O5GI9Gm3kmqcOAZlBECZP3QKx2pYpQEBHkmrnfAJyKpC5vtBa5XtTKSh/ofvVjV89dxIjMPpxMosg==}
     engines: {node: '>=22'}
 
-  '@promptfolio/source-github@0.0.3':
-    resolution: {integrity: sha512-Uf209MpQZE9SubGWfdyAgipONZBtyqWbbXARbYVuHHakcr188ZHgPzaOqa42ew+BlvfgPdbvql5wreCZJbBrwQ==}
+  '@promptfolio/source-github@0.0.4':
+    resolution: {integrity: sha512-5xFO9C/UYpkMFWmZarM3QpdpOlTEFDoy4AxCjcL4Plu04YvAkXoGpkTYiGhpc9X+w34/63T5+dNg5U6/n4Lo3w==}
     engines: {node: '>=22'}
 
-  '@promptfolio/source-remote@file:vendor/promptfolio-source-remote-e65256a.tgz':
-    resolution: {integrity: sha512-tY2fmEiqcA6Cdxygxa6w80UHqx5XvlSKq3BK8uNr1GkFg/halPmPpKtjjcoj/SPhEwMoNDtTXzZ1Epxjwil5qg==, tarball: file:vendor/promptfolio-source-remote-e65256a.tgz}
-    version: 0.0.3
+  '@promptfolio/source-remote@0.0.4':
+    resolution: {integrity: sha512-gXcmqnhgJ1kO8mRJ3SLxYpsXqMTmOuRDky6y6rvqH2wW7SmOBoELFT8DC2GD8FDF/QKqi7PUeJy26DovjUYnEw==}
     engines: {node: '>=22'}
 
   '@radix-ui/primitive@1.2.0':
@@ -3779,22 +3771,22 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@promptfolio/ai@file:vendor/promptfolio-ai-e65256a.tgz(ai@7.0.159(zod@4.6.7))':
+  '@promptfolio/ai@0.0.4(ai@7.0.159(zod@4.6.7))':
     dependencies:
-      '@promptfolio/core': file:vendor/promptfolio-core-e65256a.tgz
+      '@promptfolio/core': 0.0.4
       ai: 7.0.159(zod@4.6.7)
       zod: 4.6.7
 
-  '@promptfolio/core@file:vendor/promptfolio-core-e65256a.tgz':
+  '@promptfolio/core@0.0.4':
     dependencies:
       zod: 4.6.7
 
-  '@promptfolio/source-github@0.0.3':
+  '@promptfolio/source-github@0.0.4':
     dependencies:
-      '@promptfolio/core': file:vendor/promptfolio-core-e65256a.tgz
+      '@promptfolio/core': 0.0.4
       zod: 4.6.7
 
-  '@promptfolio/source-remote@file:vendor/promptfolio-source-remote-e65256a.tgz': {}
+  '@promptfolio/source-remote@0.0.4': {}
 
   '@radix-ui/primitive@1.2.0': {}
 

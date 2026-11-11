@@ -3,11 +3,3 @@ allowBuilds:
   unrs-resolver: false
 minimumReleaseAgeExclude:
   - '@promptfolio/*'
-# Unreleased Promptfolio builds (role links, findContactDetails, source-remote), packed from the
-# promptfolio repo at commit e65256a into vendor/. Their package.json files still say 0.0.3.
-# The override also points source-github's core dependency at the same copy.
-# Remove these, the tarball dependencies in package.json and vendor/ once the next release is on npm.
-overrides:
-  '@promptfolio/core': file:vendor/promptfolio-core-e65256a.tgz
-  '@promptfolio/ai': file:vendor/promptfolio-ai-e65256a.tgz
-  '@promptfolio/source-remote': file:vendor/promptfolio-source-remote-e65256a.tgz
