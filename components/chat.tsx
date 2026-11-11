@@ -14,6 +14,9 @@ import { useEffect, useState } from "react";
 // a conversation the server kept, as /chat/<id> loads it
 export type StoredChat = { id: string; messages: UIMessage[] };
 
+// the stored conversation as the start screen offers it: GET /api/chat's answer
+type PreviousChat = { id: string; title: string };
+
 const disclaimer =
   "Replies come from an AI model. This chat is kept for 24 hours so it can continue, and a hash of your IP for 24 hours to limit daily messages. Don't share personal information.";
 
@@ -41,8 +44,8 @@ export function Chat({ stored }: { stored?: StoredChat }) {
     setShownPath(pathname);
     if (pathname === "/" && !stored) setChat({ id: generateId(), messages: [] });
   }
-  // the id of the visitor's stored conversation, to offer it on the start screen
-  const [previousId, setPreviousId] = useState<string>();
+  // the visitor's stored conversation, to offer it on the start screen
+  const [previous, setPrevious] = useState<PreviousChat>();
   const conversation = useChat({ id: chat?.id, messages: chat?.messages, transport });
   // Not `id`: without one given, useChat makes it when it is first read. Read only in effects,
   // it is made in the browser; the start screen is prerendered, so one made while rendering
@@ -50,7 +53,7 @@ export function Chat({ stored }: { stored?: StoredChat }) {
   const { messages, sendMessage, status, error, stop, regenerate } = conversation;
 
   // Look up the visitor's stored conversation, to offer it on the start screen. The server finds it
-  // by cookie; only its id comes back, and the link opens it at /chat/<id>. Not needed when /chat/<id>
+  // by cookie; only its id and first question come back, and the link opens it at /chat/<id>. Not needed when /chat/<id>
   // has already opened it. Asked again when the chat starts over, so the one just left is offered.
   useEffect(() => {
     if (stored) return;
@@ -58,8 +61,8 @@ export function Chat({ stored }: { stored?: StoredChat }) {
     fetch("/api/chat")
       // 204: nothing stored
       .then((response) => (response.status === 200 ? response.json() : undefined))
-      .then((found?: { id: string }) => {
-        if (!ignore) setPreviousId(found?.id);
+      .then((found?: PreviousChat) => {
+        if (!ignore) setPrevious(found);
       })
       .catch(() => {}); // the chat still works without the earlier conversation
     return () => {
@@ -82,7 +85,7 @@ export function Chat({ stored }: { stored?: StoredChat }) {
   const firstName = profile.name.split(" ")[0];
   const send = (text: string) => {
     // a new chat replaces the stored one on the server, so it can't be continued any more
-    setPreviousId(undefined);
+    setPrevious(undefined);
     sendMessage({ text });
   };
 
@@ -117,7 +120,7 @@ export function Chat({ stored }: { stored?: StoredChat }) {
               autoFocus puts the cursor back in it */}
           <PromptInput key={chat?.id} busy={busy} onSend={send} onStop={stop} />
           {empty && <StarterQuestions firstName={firstName} onSelect={send} />}
-          {empty && <ResumeChatButton chatId={previousId} />}
+          {empty && <ResumeChatButton chat={previous} />}
         </div>
       </main>
 

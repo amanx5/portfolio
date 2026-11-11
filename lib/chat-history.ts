@@ -32,9 +32,19 @@ export async function deleteStoredChat(owner: string): Promise<void> {
   await redis.del(`${KEY_PREFIX}:${owner}`);
 }
 
-// The id of the visitor's stored conversation, if there is one.
-export async function storedChatId(owner: string): Promise<string | undefined> {
-  return (await storedChat(owner))?.id;
+// The visitor's stored conversation, if there is one: its id and its first question, to name it on
+// the start screen. The messages are not validated here, so the question is read by shape; an
+// unreadable one leaves the title empty. Capped, since the button shows a single line anyway.
+export async function storedChatSummary(
+  owner: string,
+): Promise<{ id: string; title: string } | undefined> {
+  const stored = await storedChat(owner);
+  if (!stored) return undefined;
+  const first = stored.messages.find((message) => message?.role === "user");
+  const text = Array.isArray(first?.parts)
+    ? first.parts.map((part) => (part?.type === "text" ? part.text : "")).join(" ")
+    : "";
+  return { id: stored.id, title: text.replace(/\s+/g, " ").trim().slice(0, 200) };
 }
 
 async function storedChat(owner: string): Promise<StoredChat | undefined> {

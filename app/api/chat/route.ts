@@ -6,7 +6,7 @@ import {
   newOwnerId,
   ownerCookie,
   readOwner,
-  storedChatId,
+  storedChatSummary,
 } from "@/lib/chat-history";
 import { chatLimiter } from "@/lib/chat-limit";
 import { loadProfile } from "@/lib/github-source";
@@ -50,18 +50,18 @@ export async function POST(request: Request): Promise<Response> {
   return response;
 }
 
-// The id of the visitor's stored conversation, so the start screen can link to it at /chat/<id>, where
-// its messages are loaded. The owner cookie alone finds it. 204 when there is none (a new visitor,
+// The id and first question of the visitor's stored conversation, so the start screen can name it
+// and link to it at /chat/<id>, where its messages are loaded. The owner cookie alone finds it. 204 when there is none (a new visitor,
 // or after it expired), which is the usual case and not an error.
 export async function GET(request: Request): Promise<Response> {
   const owner = readOwner(request);
   if (owner === undefined) return new Response(null, { status: 204 });
 
   try {
-    const id = await storedChatId(owner);
-    if (id === undefined) return new Response(null, { status: 204 });
+    const summary = await storedChatSummary(owner);
+    if (summary === undefined) return new Response(null, { status: 204 });
     // private to this visitor, so it must never be cached and served to another
-    return Response.json({ id }, { headers: { "cache-control": "no-store" } });
+    return Response.json(summary, { headers: { "cache-control": "no-store" } });
   } catch (error) {
     // only the type: a store error can repeat its credentials
     console.error("[chat] stored conversation could not be checked:", error instanceof Error ? error.name : "unknown");
