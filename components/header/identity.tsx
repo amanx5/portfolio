@@ -77,7 +77,7 @@ export function Identity({
           </PopoverHeader>
         </div>
         {links.length > 0 && <Separator className="my-1" />}
-        {/* every link from profile.json, in its order */}
+        {/* every link from the profile, in its order */}
         {links.map((link) => {
           const Icon = linkIcon(link.url);
           return (

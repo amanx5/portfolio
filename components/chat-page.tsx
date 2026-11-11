@@ -1,11 +1,12 @@
 import { profileLinkUrls } from "@promptfolio/core";
 import { Chat, type StoredChat } from "@/components/chat";
 import { AppContextProvider } from "@/contexts/app-context";
-import { profileResult } from "@/lib/profile";
+import { loadOwnerProfile } from "@/lib/profile";
 import { avatarUrl } from "@/lib/site";
 
 // What both / and /chat/<id> render: the chat, given the profile. /chat/<id> also passes the chat it names.
-export function ChatPage({ stored }: { stored?: StoredChat }) {
+export async function ChatPage({ stored }: { stored?: StoredChat }) {
+  const profileResult = await loadOwnerProfile();
   if (!profileResult.ok) {
     console.error("Profile load failed with issues:\n", profileResult.issues);
     return "Something went wrong while loading the profile data. Please try again later.";

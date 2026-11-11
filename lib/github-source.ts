@@ -8,7 +8,7 @@ import {
 } from "@promptfolio/source-github";
 import { after } from "next/server";
 import githubConfigData from "@/github.json";
-import { profileResult } from "@/lib/profile";
+import { loadOwnerProfile } from "@/lib/profile";
 import { redis } from "@/lib/redis";
 
 const KEY_PREFIX = "github";
@@ -56,7 +56,7 @@ const github = githubConfig.ok
 // With no stored snapshot, or one that doesn't fit, it is the owner profile alone (with warnings),
 // so visitors still get an answer and the next refresh overwrites the bad snapshot.
 export async function loadProfile(): Promise<ProfileLoadResult> {
-  // an invalid github.json is a deploy mistake, so it fails like an invalid profile.json
+  // an invalid github.json is a deploy mistake, so it fails like an invalid profile
   if (!githubConfig.ok) return githubConfig;
-  return github!.loadProfile(profileResult);
+  return github!.loadProfile(await loadOwnerProfile());
 }

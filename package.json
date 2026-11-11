@@ -11,8 +11,8 @@
   "dependencies": {
     "@ai-sdk/react": "^4.0.163",
     "@base-ui/react": "^1.9.0",
-    "@promptfolio/ai": "^0.0.3",
-    "@promptfolio/core": "^0.0.3",
+    "@promptfolio/ai": "file:vendor/promptfolio-ai-0.0.3.tgz",
+    "@promptfolio/core": "file:vendor/promptfolio-core-0.0.3.tgz",
     "@promptfolio/source-github": "^0.0.3",
     "@radix-ui/react-use-controllable-state": "^1.3.0",
     "@shadcn/react": "^0.3.1",

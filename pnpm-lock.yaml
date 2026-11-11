@@ -4,6 +4,10 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@promptfolio/core': file:vendor/promptfolio-core-0.0.3.tgz
+  '@promptfolio/ai': file:vendor/promptfolio-ai-0.0.3.tgz
+
 importers:
 
   .:
@@ -15,11 +19,11 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@promptfolio/ai':
-        specifier: ^0.0.3
-        version: 0.0.3(ai@7.0.159(zod@4.6.7))
+        specifier: file:vendor/promptfolio-ai-0.0.3.tgz
+        version: file:vendor/promptfolio-ai-0.0.3.tgz(ai@7.0.159(zod@4.6.7))
       '@promptfolio/core':
-        specifier: ^0.0.3
-        version: 0.0.3
+        specifier: file:vendor/promptfolio-core-0.0.3.tgz
+        version: file:vendor/promptfolio-core-0.0.3.tgz
       '@promptfolio/source-github':
         specifier: ^0.0.3
         version: 0.0.3
@@ -639,14 +643,16 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@promptfolio/ai@0.0.3':
-    resolution: {integrity: sha512-q6GKhA59iqO6cTfdawlRRxjGfgyEV2CCi2Qo+ErP70K5RtbxnmWASdWGFHi75LPmj2mNdqWI1nE3HVB3VNEEmQ==}
+  '@promptfolio/ai@file:vendor/promptfolio-ai-0.0.3.tgz':
+    resolution: {integrity: sha512-dxbyzetqOiykPdtFBvKPJwWVuS1RfQjnnb1O5aeCfPH4E4isgxBmhu/TI91tPt/eV29+MPbDicJOSkz4nL8VUA==, tarball: file:vendor/promptfolio-ai-0.0.3.tgz}
+    version: 0.0.3
     engines: {node: '>=22'}
     peerDependencies:
       ai: ^7.0.154
 
-  '@promptfolio/core@0.0.3':
-    resolution: {integrity: sha512-Pzmk4e2CvF14KKQzrYK8NtERbjHQL879ko6BlhxmwlYDIb88BpbEBKBhrwaxK8uDFNOkf9eXFurEMuSnMMZz5A==}
+  '@promptfolio/core@file:vendor/promptfolio-core-0.0.3.tgz':
+    resolution: {integrity: sha512-Ob64+9RKDcvwW+kMLkWMkZa7l7dpInLoQlSTVjNoAhCTvEZlHIRBv3KF7dGS8mKNqS4S9RxQCuDkDgXB9NWMYw==, tarball: file:vendor/promptfolio-core-0.0.3.tgz}
+    version: 0.0.3
     engines: {node: '>=22'}
 
   '@promptfolio/source-github@0.0.3':
@@ -3764,19 +3770,19 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@promptfolio/ai@0.0.3(ai@7.0.159(zod@4.6.7))':
+  '@promptfolio/ai@file:vendor/promptfolio-ai-0.0.3.tgz(ai@7.0.159(zod@4.6.7))':
     dependencies:
-      '@promptfolio/core': 0.0.3
+      '@promptfolio/core': file:vendor/promptfolio-core-0.0.3.tgz
       ai: 7.0.159(zod@4.6.7)
       zod: 4.6.7
 
-  '@promptfolio/core@0.0.3':
+  '@promptfolio/core@file:vendor/promptfolio-core-0.0.3.tgz':
     dependencies:
       zod: 4.6.7
 
   '@promptfolio/source-github@0.0.3':
     dependencies:
-      '@promptfolio/core': 0.0.3
+      '@promptfolio/core': file:vendor/promptfolio-core-0.0.3.tgz
       zod: 4.6.7
 
   '@radix-ui/primitive@1.2.0': {}

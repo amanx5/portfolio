@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { profileResult } from "@/lib/profile";
+import { loadOwnerProfile } from "@/lib/profile";
 import { avatarUrl, siteUrl } from "@/lib/site";
 
 // The link-preview image (Slack, LinkedIn, WhatsApp). Built once at build time.
@@ -7,7 +7,8 @@ export const alt = "Ask about my work";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function Image() {
+export default async function Image() {
+  const profileResult = await loadOwnerProfile();
   const identity = profileResult.ok ? profileResult.profile.identity : null;
   const name = identity?.name ?? "Portfolio";
   const headline = identity?.headline;

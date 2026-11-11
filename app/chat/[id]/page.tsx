@@ -2,7 +2,7 @@ import { loadVisitorChat } from "@promptfolio/ai";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { metadata as homeMetadata } from "@/app/page";
+import { generateMetadata as homeMetadata } from "@/app/page";
 import { ChatPage } from "@/components/chat-page";
 import { chatStore, readOwner } from "@/lib/chat-history";
 import { loadProfile } from "@/lib/github-source";
@@ -10,10 +10,9 @@ import { replyDetails } from "@/lib/reply-details";
 import { siteUrl } from "@/lib/site";
 
 // Private to the visitor whose cookie names it, so search engines are kept out.
-export const metadata: Metadata = {
-  ...homeMetadata,
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return { ...(await homeMetadata()), robots: { index: false, follow: false } };
+}
 
 // A chat at its own address. Only the browser that started it finds it, by the owner cookie, and
 // only while it is the visitor's stored chat: anything else is not found, the same as another

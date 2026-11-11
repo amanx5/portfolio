@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { ChatPage } from "@/components/chat-page";
-import { profileResult } from "@/lib/profile";
+import { loadOwnerProfile } from "@/lib/profile";
 
-// The profile is bundled JSON, so a static metadata object can read it; no generateMetadata needed.
+// The profile fetch is cached, so this metadata is still prerendered.
 // If the profile fails to load, the layout's defaults are used.
-export const metadata = profileMetadata();
-
-function profileMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+  const profileResult = await loadOwnerProfile();
   if (!profileResult.ok) return {};
 
   // Name first so tabs and search results group it with the main site, then say it's the chat.
