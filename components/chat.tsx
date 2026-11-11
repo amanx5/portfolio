@@ -32,12 +32,14 @@ export function Chat({ stored }: { stored?: StoredChat }) {
   const [chat, setChat] = useState<StoredChat | undefined>(stored);
   // A chat begun on / stays on that page after its address becomes /chat/<id>, so the header's
   // Chat link back to / keeps the same page on screen; it is cleared here instead. Leaving / for
-  // /chat/<id> doesn't count, only coming back to it.
+  // /chat/<id> doesn't count, only coming back to it. Only the chat begun on / starts over:
+  // Next.js keeps a page it left mounted but hidden, so a chat opened at /chat/<id> also sees the
+  // path become / and must keep its messages for when it is shown again.
   const pathname = usePathname();
   const [shownPath, setShownPath] = useState(pathname);
   if (pathname !== shownPath) {
     setShownPath(pathname);
-    if (pathname === "/") setChat({ id: generateId(), messages: [] });
+    if (pathname === "/" && !stored) setChat({ id: generateId(), messages: [] });
   }
   // the id of the visitor's stored conversation, to offer it on the start screen
   const [previousId, setPreviousId] = useState<string>();
