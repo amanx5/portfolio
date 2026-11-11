@@ -11,9 +11,10 @@
   "dependencies": {
     "@ai-sdk/react": "^4.0.163",
     "@base-ui/react": "^1.9.0",
-    "@promptfolio/ai": "file:vendor/promptfolio-ai-0.0.3.tgz",
-    "@promptfolio/core": "file:vendor/promptfolio-core-0.0.3.tgz",
+    "@promptfolio/ai": "file:vendor/promptfolio-ai-e65256a.tgz",
+    "@promptfolio/core": "file:vendor/promptfolio-core-e65256a.tgz",
     "@promptfolio/source-github": "^0.0.3",
+    "@promptfolio/source-remote": "file:vendor/promptfolio-source-remote-e65256a.tgz",
     "@radix-ui/react-use-controllable-state": "^1.3.0",
     "@shadcn/react": "^0.3.1",
     "@upstash/redis": "^1.40.0",
